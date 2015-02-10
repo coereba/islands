@@ -2,20 +2,16 @@
 # how keel length and tarsometatarsus length correlate with island characteristics within taxa
 
 setwd("~/Dropbox/Island-bird-morphology/islands")
-data <- read.csv('all_data.csv', header = T, na.strings = '.')
+data <- read.csv('skeletal_data.csv', header = T)
 summary(data)
 str(data)
-colnames(data) <- tolower(colnames(data))
 require(nlme)
 require(plyr)
-
-sub.data.b <- subset(data, genus != 'Todus' & genus != 'Troglodytes' & island != 'Hawaii'
-                     & island != 'Kauai' & island != 'Maui' & island != 'Oahu')
 
 # first reduce dataset to only specimens without missing measurements of key skeletal elements
 # remove non-island populations
 # remove populations for which landbird species richness is unknown
-sub.data <- subset(sub.data.b, keel.length != 'NA' & coracoid != 'NA' & femur != 'NA' & humerus != 'NA' & tarsometatarsus != 'NA' 
+sub.data <- subset(data, keel.length != 'NA' & coracoid != 'NA' & femur != 'NA' & humerus != 'NA' & tarsometatarsus != 'NA' 
                    & island !='NA' & island != 'continent' & island != 'Australia' & landbird.spp.richness != 'NA') 
 summary(sub.data)
 write.csv(sub.data, file = 'sub_data.csv')
