@@ -9,14 +9,14 @@ colnames(data) <- tolower(colnames(data))
 require(nlme)
 require(plyr)
 
+sub.data.b <- subset(data, genus != 'Todus' & genus != 'Troglodytes' & island != 'Hawaii'
+                     & island != 'Kauai' & island != 'Maui' & island != 'Oahu')
+
 # first reduce dataset to only specimens without missing measurements of key skeletal elements
-# remove recently introduced populations (Zosterops in Hawaii)
-# remove taxa with too few samples for reliable analyses - Todus and Troglodytes aedon
 # remove non-island populations
 # remove populations for which landbird species richness is unknown
-sub.data <- subset(data, keel.length != 'NA' & coracoid != 'NA' & femur != 'NA' & humerus != 'NA' & tarsometatarsus != 'NA' 
-                   & island !='NA' & genus != 'Todus' & genus != 'Troglodytes' & island != 'continent' & island != 'Hawaii'
-                   & island != 'Kauai' & island != 'Maui' & island != 'Oahu' & island != 'Australia' & landbird.spp.richness != 'NA') 
+sub.data <- subset(sub.data.b, keel.length != 'NA' & coracoid != 'NA' & femur != 'NA' & humerus != 'NA' & tarsometatarsus != 'NA' 
+                   & island !='NA' & island != 'continent' & island != 'Australia' & landbird.spp.richness != 'NA') 
 summary(sub.data)
 write.csv(sub.data, file = 'sub_data.csv')
 
