@@ -49,6 +49,7 @@ dataset <- subset(dataset, !(genus %in% few.island.samples))
 summary(dataset)
 dataset <- droplevels(dataset)
 
+## analyzing all data together
 # testing how to extract just the slope from a simple linear model of pc1 by species richness
 lm(pc1 ~ landbird.spp.richness, data = dataset)$coefficients[2] # this appears to work
 
@@ -72,10 +73,12 @@ colnames(slopes.bodysize)
 #the name for the slope column is weird. changing it
 colnames(slopes.bodysize) <- c('family', 'genus', 'pc1', 'slope', 'nsample')
 summary(slopes.bodysize)
+# plot relationship
 par(mar = c(5, 5, 1, 1))
 plot(slope ~ pc1, data = slopes.bodysize, cex = 2, cex.lab = 2, pch = 21, bg = 'gray',
      xlab = 'body size', ylab = 'slope of body size by species richness')
 abline(lm(slope ~ pc1, data = slopes.bodysize))
+# linear model of slope of body size by species richness and body size
 summary(lm(slope ~ pc1, data = slopes.bodysize))
 # is the lack of relationship driven by the outlier genus Loxigilla?
 slopes <- subset(slopes.bodysize, genus != 'Loxigilla')
@@ -94,3 +97,26 @@ plot(y ~ x, pch = 21, bg = 'gray', cex = 2, cex.lab = 2,
      xlab = 'body size', ylab = 'slope of body size by species richness')
 abline(lm(y ~ x))
 
+## test the island rule in specific taxa
+doves <- subset(dataset, family == 'Columbidae')
+summary(doves)
+# pca of just the doves
+dove.pca.data <- doves[, c('coracoid', 'femur', 'humerus', 'tarsometatarsus')]
+dove.pca <- prcomp(dove.pca.data, scale = T)
+summary(dove.pca)
+dove.pca
+doves$dove.pc1 <- dove.pca$x[, 1]
+# calculate slopes for each genus of columbids
+doves.slopes <- ddply(doves, c('family', 'genus'),
+                         function(x){
+                           c(dove.pc1 = mean(x$dove.pc1),
+                             slope = lm(x$dove.pc1 ~ x$landbird.spp.richness)$coefficients[2],
+                             nsample = nrow(x))
+                         })
+doves.slopes
+colnames(doves.slopes) <- c('family', 'genus', 'dove.pc1', 'slope', 'nsample')
+# analyze just the columbids for evidence of the island rule
+summary(lm(slope ~ dove.pc1, data = doves.slopes))
+plot(slope ~ dove.pc1, data = doves.slopes, cex = 2, cex.lab = 2, pch = 21, bg = 'gray',
+     xlab = 'body size', ylab = 'slope of body size by species richness')
+abline(lm(slope ~ dove.pc1, data = doves.slopes))
