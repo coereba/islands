@@ -57,33 +57,55 @@ slopes.bodysize <- ddply(dataset, c('family', 'genus'),
                          function(x){
                            c(pc1 = mean(x$pc1),
                              slope = lm(x$pc1 ~ x$landbird.spp.richness)$coefficients[2],
+                             pvalue = anova(lm(x$pc1 ~ x$landbird.spp.richness))$'Pr(>F)'[1],
+                             rsq = summary(lm(x$pc1 ~ x$landbird.spp.richness))$r.squared,
                              nsample = nrow(x))
                          })
 summary(slopes.bodysize)
 str(slopes.bodysize)
 head(slopes.bodysize)
+colnames(slopes.bodysize)
+#the name for the slope column is weird. changing it
+colnames(slopes.bodysize) <- c('family', 'genus', 'pc1', 'slope', 'pvalue', 'rsq', 'nsample')
+summary(slopes.bodysize)
+
 # test that it did what I think it did
 duc <- subset(dataset, genus == 'Ducula')
 duc.slope <- lm(pc1 ~ landbird.spp.richness, data = duc)$coefficients[2]
 duc.pc1mean <- mean(duc$pc1)
+duc.p <- anova(lm(duc$pc1 ~ duc$landbird.spp.richness))$'Pr(>F)'[1]
+duc.rsq <- summary(lm(duc$pc1 ~ duc$landbird.spp.richness))$r.squared
 duc.slope # slope matches
 duc.pc1mean # pc1 mean matches
+duc.p
+duc.rsq
 
-colnames(slopes.bodysize)
-#the name for the slope column is weird. changing it
-colnames(slopes.bodysize) <- c('family', 'genus', 'pc1', 'slope', 'nsample')
-summary(slopes.bodysize)
-# plot relationship
-par(mar = c(5, 5, 1, 1))
-plot(slope ~ pc1, data = slopes.bodysize, cex = 2, cex.lab = 2, pch = 21, bg = 'gray',
-     xlab = 'body size', ylab = 'slope of body size by species richness')
-abline(lm(slope ~ pc1, data = slopes.bodysize))
-# linear model of slope of body size by species richness and body size
-summary(lm(slope ~ pc1, data = slopes.bodysize))
-# is the lack of relationship driven by the outlier genus Loxigilla?
-slopes <- subset(slopes.bodysize, genus != 'Loxigilla')
-plot(slope ~ pc1, data = slopes)
+# assign slope = 0 for any relationships that aren't statistically significant at p<0.05. 
+slopes <- slopes.bodysize
+slopes$slope <- ifelse(slopes$pvalue > 0.05, 0.00000, slopes$slope)
+head(slopes)
+
+## plot relationship
+# color code by taxon
+slopes$bg <- ifelse(slopes$family == 'Alcedinidae', 'darkseagreen', 'deepskyblue')
+slopes$bg <- ifelse(slopes$family == 'Columbidae', 'darkorchid', slopes$bg)
+slopes$bg <- ifelse(slopes$family == 'Trochilidae', 'deeppink', slopes$bg)
+par(mar = c(5, 6, 1, 1))
+plot(slope ~ pc1, data = slopes, cex = (rsq*4)+1, cex.lab = 2, cex.axis = 1.8, pch = 21, bg = slopes$bg,
+     xlab = 'body size (PC1)', ylab = 'slope of body size by species richness')
+legend(x = 4, y = 0.007, legend = c('0.0', '0.30', round(max(slopes$rsq), 2)), 
+       pch = 21, pt.bg = 'gray', title = 'R-squared', cex = 2,
+       y.intersp = 0.8, bty = 'n', 
+       pt.cex = c(1, 0.3*4+1, max(slopes$rsq)*4+1))
+legend(x = -5, y = 0.007, legend = c('Passeriformes', 'Alcedinidae', 'Columbidae', 'Trochilidae'), 
+       text.col = c('deepskyblue', 'darkseagreen', 'darkorchid', 'deeppink'),
+       bty = 'n', xjust = 0, cex = 2, y.intersp = 0.7)
+# linear model of slope of body size by speces richness and body size
 summary(lm(slope ~ pc1, data = slopes))
+# is the lack of relationship driven by the outlier genus Loxigilla?
+s <- subset(slopes, genus != 'Loxigilla')
+plot(slope ~ pc1, data = s)
+summary(lm(slope ~ pc1, data = s))
 # no, even when the outlier is removed there is not a significant relationship 
 # between slope of body size by island richness and body size
 
@@ -91,9 +113,9 @@ summary(lm(slope ~ pc1, data = slopes))
 # small-bodied species should get larger on smaller islands (have negative slope)
 # large-bodied species should get smaller on smaller islands (have positive slope)
 
-x <- c(-2, -1, -1, 0, 1, 1, 2)
-y <- c(-2, -1, 0, 0, 0, 1, 2)
-plot(y ~ x, pch = 21, bg = 'gray', cex = 2, cex.lab = 2, 
+x <- c(0, 0.1, 0.7, 1, 1, 1.5, 1.6, 1.8, 2, 2.18, 2.45, 2.5, 3, 3, 3.2, 3.5, 4.00)
+y <- c(-2, -1.8, -1.4, -1, 0, -0.45, 0, 0, 0, 0, 0.5, 0, 0, 1, 1.1, 1.6, 2)
+plot(y ~ x, pch = 21, bg = 'gray', cex = 3, cex.lab = 2, 
      xlab = 'body size', ylab = 'slope of body size by species richness')
 abline(lm(y ~ x))
 
@@ -111,10 +133,14 @@ doves.slopes <- ddply(doves, c('family', 'genus'),
                          function(x){
                            c(dove.pc1 = mean(x$dove.pc1),
                              slope = lm(x$dove.pc1 ~ x$landbird.spp.richness)$coefficients[2],
+                             pvalue = anova(lm(x$pc1 ~ x$landbird.spp.richness))$'Pr(>F)'[1],
                              nsample = nrow(x))
                          })
 doves.slopes
-colnames(doves.slopes) <- c('family', 'genus', 'dove.pc1', 'slope', 'nsample')
+colnames(doves.slopes) <- c('family', 'genus', 'dove.pc1', 'slope', 'pvalue', 'nsample')
+# assign slope = 0 for any relationships that aren't statistically significant at p<0.05. 
+doves.slopes$slope <- ifelse(doves.slopes$pvalue > 0.05, 0.00000, doves.slopes$slope)
+head(doves.slopes)
 # analyze just the columbids for evidence of the island rule
 summary(lm(slope ~ dove.pc1, data = doves.slopes))
 plot(slope ~ dove.pc1, data = doves.slopes, cex = 2, cex.lab = 2, pch = 21, bg = 'gray',
