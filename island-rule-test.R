@@ -82,8 +82,12 @@ duc.rsq
 
 # assign slope = 0 for any relationships that aren't statistically significant at p<0.05. 
 slopes <- slopes.bodysize
-slopes$slope <- ifelse(slopes$pvalue > 0.05, 0.00000, slopes$slope)
+# commenting this line out is the only change needed to not assign slope = 0 for non-sig relationships
+#slopes$slope <- ifelse(slopes$pvalue > 0.05, 0.00000, slopes$slope)  
 head(slopes)
+
+# linear model of slope of body size by speces richness and body size
+summary(lm(slope ~ pc1, data = slopes))
 
 ## plot relationship
 # color code by taxon
@@ -93,15 +97,13 @@ slopes$bg <- ifelse(slopes$family == 'Trochilidae', 'deeppink', slopes$bg)
 par(mar = c(5, 6, 1, 1))
 plot(slope ~ pc1, data = slopes, cex = (rsq*4)+1, cex.lab = 2, cex.axis = 1.8, pch = 21, bg = slopes$bg,
      xlab = 'body size (PC1)', ylab = 'slope of body size by species richness')
-legend(x = 4, y = 0.007, legend = c('0.0', '0.30', round(max(slopes$rsq), 2)), 
+legend(x = 4, y = 0.007, legend = c('0.0', '0.30', round(max(slopes.bodysize$rsq), 2)), 
        pch = 21, pt.bg = 'gray', title = 'R-squared', cex = 2,
        y.intersp = 0.8, bty = 'n', 
        pt.cex = c(1, 0.3*4+1, max(slopes$rsq)*4+1))
 legend(x = -5, y = 0.007, legend = c('Passeriformes', 'Alcedinidae', 'Columbidae', 'Trochilidae'), 
        text.col = c('deepskyblue', 'darkseagreen', 'darkorchid', 'deeppink'),
        bty = 'n', xjust = 0, cex = 2, y.intersp = 0.7)
-# linear model of slope of body size by speces richness and body size
-summary(lm(slope ~ pc1, data = slopes))
 # is the lack of relationship driven by the outlier genus Loxigilla?
 s <- subset(slopes, genus != 'Loxigilla')
 plot(slope ~ pc1, data = s)
@@ -120,6 +122,7 @@ plot(y ~ x, pch = 21, bg = 'gray', cex = 3, cex.lab = 2,
 abline(lm(y ~ x))
 
 ## test the island rule in specific taxa
+# Doves 
 doves <- subset(dataset, family == 'Columbidae')
 summary(doves)
 # pca of just the doves
@@ -133,16 +136,58 @@ doves.slopes <- ddply(doves, c('family', 'genus'),
                          function(x){
                            c(dove.pc1 = mean(x$dove.pc1),
                              slope = lm(x$dove.pc1 ~ x$landbird.spp.richness)$coefficients[2],
-                             pvalue = anova(lm(x$pc1 ~ x$landbird.spp.richness))$'Pr(>F)'[1],
+                             pvalue = anova(lm(x$dove.pc1 ~ x$landbird.spp.richness))$'Pr(>F)'[1],
+                             rsq = summary(lm(x$dove.pc1 ~ x$landbird.spp.richness))$r.squared,
                              nsample = nrow(x))
                          })
 doves.slopes
-colnames(doves.slopes) <- c('family', 'genus', 'dove.pc1', 'slope', 'pvalue', 'nsample')
+colnames(doves.slopes) <- c('family', 'genus', 'dove.pc1', 'slope', 'pvalue', 'rsq', 'nsample')
 # assign slope = 0 for any relationships that aren't statistically significant at p<0.05. 
+# commenting this line out is the only change needed to not assign slope = 0 for non-sig relationships
 doves.slopes$slope <- ifelse(doves.slopes$pvalue > 0.05, 0.00000, doves.slopes$slope)
 head(doves.slopes)
 # analyze just the columbids for evidence of the island rule
 summary(lm(slope ~ dove.pc1, data = doves.slopes))
-plot(slope ~ dove.pc1, data = doves.slopes, cex = 2, cex.lab = 2, pch = 21, bg = 'gray',
-     xlab = 'body size', ylab = 'slope of body size by species richness')
-abline(lm(slope ~ dove.pc1, data = doves.slopes))
+#plot doves slope by body size
+plot(slope ~ dove.pc1, data = doves.slopes, cex = (rsq*4)+1, cex.lab = 2, cex.axis = 1.8, pch = 21, 
+     bg = 'darkorchid', xlab = 'body size', ylab = 'slope of body size by species richness')
+legend(x = 1.8, y = -0.0003, legend = c('0.0', '0.20', round(max(doves.slopes$rsq), 2)), 
+       pch = 21, pt.bg = 'darkorchid', title = 'R-squared', cex = 2,
+       y.intersp = 0.8, bty = 'n', 
+       pt.cex = c(1, 0.2*4+1, max(doves.slopes$rsq)*4+1))
+
+# test island rule in just passerines
+#subset just the passerine families
+pass <- subset(dataset, family == 'Meliphagidae' | family == 'Monarchidae' | family == 'Pachycephalidae' |
+                 family == 'Rhipiduridae' | family == 'Thraupidae' | family == 'Zosteropidae')
+summary(pass)
+pass.pca.data <- pass[, c('coracoid', 'femur', 'humerus', 'tarsometatarsus')]
+pass.pca <- prcomp(pass.pca.data, scale = T)
+summary(pass.pca)
+pass.pca
+pass$pass.pc1 <- pass.pca$x[, 1]*-1
+# calculate slopes for each genus of columbids
+pass.slopes <- ddply(pass, c('family', 'genus'),
+                      function(x){
+                        c(pass.pc1 = mean(x$pass.pc1),
+                          slope = lm(x$pass.pc1 ~ x$landbird.spp.richness)$coefficients[2],
+                          pvalue = anova(lm(x$pass.pc1 ~ x$landbird.spp.richness))$'Pr(>F)'[1],
+                          rsq = summary(lm(x$pass.pc1 ~ x$landbird.spp.richness))$r.squared,
+                          nsample = nrow(x))
+                      })
+pass.slopes
+colnames(pass.slopes) <- c('family', 'genus', 'pass.pc1', 'slope', 'pvalue', 'rsq', 'nsample')
+# assign slope = 0 for any relationships that aren't statistically significant at p<0.05. 
+# commenting this line out is the only change needed to not assign slope = 0 for non-sig relationships
+#pass.slopes$slope <- ifelse(pass.slopes$pvalue > 0.05, 0.00000, pass.slopes$slope)
+head(pass.slopes)
+# analyze the passerines to test for evidence of the island rule
+summary(lm(slope ~ pass.pc1, data = pass.slopes))
+# figure making
+plot(slope ~ pass.pc1, data = pass.slopes, cex = (rsq*4)+1, cex.lab = 2, cex.axis = 1.8, pch = 21, 
+     bg = 'deepskyblue', xlab = 'body size', ylab = 'slope of body size by species richness')
+legend(x = 1.8, y = 0.02, legend = c('0.0', '0.30', round(max(pass.slopes$rsq), 2)), 
+       pch = 21, pt.bg = 'deepskyblue', title = 'R-squared', cex = 2,
+       y.intersp = 0.8, bty = 'n', 
+       pt.cex = c(1, 0.3*4+1, max(pass.slopes$rsq)*4+1))
+#abline(lm(slope ~ pass.pc1, data = pass.slopes))
