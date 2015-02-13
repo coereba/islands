@@ -274,6 +274,59 @@ AIC(lm(shape ~ log10(spp.rich) + species, data = zost))
 anova(lm(shape ~ log10(spp.rich) + species, data = zost))
 
 # Trochilidae
+hum <- subset(df, family == 'Trochilidae')
+summary(hum)
+summary(lm(shape ~ log10(spp.rich), data = hum))
+AIC(lm(shape ~ log10(spp.rich), data = hum))
+summary(lm(shape ~ log10(area), data = hum))
+AIC(lm(shape ~ log10(area), data = hum))
+summary(lm(shape ~ log10(spp.rich) + species, data = hum))
+AIC(lm(shape ~ log10(spp.rich) + species, data = hum))
+anova(lm(shape ~ log10(spp.rich) + species, data = hum))
+
+# Rhipiduridae
+rhip <- subset(df, genus == 'Rhipidura')
+summary(rhip)
+summary(lm(shape ~ log10(spp.rich), data = rhip))
+AIC(lm(shape ~ log10(spp.rich), data = rhip))
+summary(lm(shape ~ log10(area), data = rhip))
+AIC(lm(shape ~ log10(area), data = rhip))
+summary(lm(shape ~ log10(spp.rich) + species, data = rhip))
+AIC(lm(shape ~ log10(spp.rich) + species, data = rhip))
+anova(lm(shape ~ log10(spp.rich) + species, data = rhip))
+
+# Meliphagidae
+mel <- subset(df, family == 'Meliphagidae')
+summary(mel)
+summary(lm(shape ~ log10(spp.rich), data = mel))
+AIC(lm(shape ~ log10(spp.rich), data = mel))
+summary(lm(shape ~ log10(area), data = mel))
+AIC(lm(shape ~ log10(area), data = mel))
+summary(lm(shape ~ log10(spp.rich) + species, data = mel))
+AIC(lm(shape ~ log10(spp.rich) + species, data = mel))
+anova(lm(shape ~ log10(spp.rich) + species, data = mel))
+
+# Monarchidae
+mon <- subset(df, family == 'Monarchidae')
+summary(mon)
+summary(lm(shape ~ log10(spp.rich), data = mon))
+AIC(lm(shape ~ log10(spp.rich), data = mon))
+summary(lm(shape ~ log10(area), data = mon))
+AIC(lm(shape ~ log10(area), data = mon))
+summary(lm(shape ~ log10(spp.rich) + species, data = mon))
+AIC(lm(shape ~ log10(spp.rich) + species, data = mon))
+anova(lm(shape ~ log10(spp.rich) + species, data = mon))
+
+# Pachycephala
+pach <- subset(df, genus == 'Pachycephala')
+summary(pach)
+summary(lm(shape ~ log10(spp.rich), data = pach))
+AIC(lm(shape ~ log10(spp.rich), data = pach))
+summary(lm(shape ~ log10(area), data = pach))
+AIC(lm(shape ~ log10(area), data = pach))
+summary(lm(shape ~ log10(spp.rich) + species, data = pach))
+AIC(lm(shape ~ log10(spp.rich) + species, data = pach))
+anova(lm(shape ~ log10(spp.rich) + species, data = pach))
 
 
 
