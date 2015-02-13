@@ -139,18 +139,142 @@ pic.tarso.resid <- pic(p.df$tarso.resid, tree)
 summary(lm(pic.keel.resid ~ pic.spp.rich - 1))
 summary(lm(pic.shape ~ pic.spp.rich - 1))
 summary(lm(pic.tarso.resid ~ pic.spp.rich - 1))
-par(mar = c(3,3,3,3))
+par(mar = c(5,5,1,1))
 plot(pic.keel.resid ~ pic.spp.rich)
 plot(pic.shape ~ pic.spp.rich)
 plot(pic.tarso.resid ~ pic.spp.rich)
 
-#non phylo analyses of population averages
+# non phylo analyses of population averages
+# shape
 summary(lm(shape ~ log10(spp.rich), data = df))
+summary(lm(shape ~ log10(spp.rich) + family), data = df)
+summary(lm(shape ~ family, data = df))
+# R^2 for shape ~ spp.rich after accounting for family differences
+1 - (summary(lm(shape ~ log10(spp.rich) + family), data = df)$sigma/summary(lm(shape ~ family, data = df))$sigma)^2
 plot(shape ~ log10(spp.rich), data = df)
+# keel
 summary(lm(keel.resid ~ log10(spp.rich), data = df))
+summary(lm(keel.resid ~ log10(spp.rich) + family), data = df)
 plot(keel.resid ~ log10(spp.rich), data = df)
+# tarsometatarsus
 summary(lm(tarso.resid ~ log10(spp.rich), data = df))
 plot(tarso.resid ~ log10(spp.rich), data = df)
+
+# are patterns stronger when we look at within-family relationships?
+# Colubidae
+doves <- subset(df, family == 'Columbidae')
+summary(doves)
+summary(lm(shape ~ log10(spp.rich), data = doves))
+summary(lm(keel.resid ~ log10(spp.rich), data = doves))
+summary(lm(tarso.resid ~ log10(spp.rich), data = doves))
+plot(shape ~ log10(spp.rich), data = doves)
+
+# Ptilinopus
+ptil <- subset(df, genus == 'Ptilinopus')
+# air-ground shape index
+summary(lm(shape ~ log10(spp.rich), data = ptil))
+summary(lm(shape ~ log10(area), data = ptil))
+summary(lm(shape ~ log10(spp.rich) + species, data = ptil))
+anova(lm(shape ~ log10(spp.rich) + species, data = ptil))
+summary(lm(shape ~ species, data = ptil))
+AIC(lm(shape ~ species, data = ptil))
+summary(lm(keel.resid ~ log10(spp.rich), data = ptil))
+summary(lm(tarso.resid ~ log10(spp.rich), data = ptil))
+plot(shape ~ log10(spp.rich), data = ptil)
+
+# Ducula
+duc <- subset(df, genus == 'Ducula')
+summary(duc)
+summary(lm(shape ~ log10(spp.rich), data = duc))
+summary(lm(shape ~ log10(area), data = duc))
+summary(lm(shape ~ log10(spp.rich) + species, data = duc))
+summary(lm(shape ~ species, data = duc))
+
+# Columbina
+columbina <- subset(df, genus == 'Columbina')
+summary(columbina)
+# air-ground shape index
+summary(lm(shape ~ log10(spp.rich), data = columbina))
+AIC(lm(shape ~ log10(spp.rich), data = columbina))
+summary(lm(shape ~ log10(area), data = columbina))
+AIC(lm(shape ~ log10(area), data = columbina))
+summary(lm(shape ~ log10(spp.rich) + species, data = columbina))
+AIC(lm(shape ~ log10(spp.rich) + species, data = columbina))
+anova(lm(shape ~ log10(spp.rich) + species, data = columbina))
+
+# Macropygia
+mac <- subset(df, genus == 'Macropygia')
+summary(mac)
+summary(lm(shape ~ log10(spp.rich), data = mac))
+AIC(lm(shape ~ log10(spp.rich), data = mac))
+summary(lm(shape ~ log10(area), data = mac))
+AIC(lm(shape ~ log10(area), data = mac))
+summary(lm(shape ~ log10(spp.rich) + species, data = mac))
+anova(lm(shape ~ log10(spp.rich) + species, data = mac))
+AIC(lm(shape ~ log10(spp.rich) + species, data = mac))
+
+# Zenaida
+zen <- subset(df, genus == 'Zenaida')
+summary(zen)
+summary(lm(shape ~ log10(spp.rich), data = zen))
+AIC(lm(shape ~ log10(spp.rich), data = zen))
+summary(lm(shape ~ log10(area), data = zen))
+AIC(lm(shape ~ log10(area), data = zen))
+
+# Coereba flaveola
+coereba <- subset(df, genus == 'Coereba')
+summary(coereba)
+summary(lm(shape ~ log10(spp.rich), data = coereba))
+AIC(lm(shape ~ log10(spp.rich), data = coereba))
+summary(lm(shape ~ log10(area), data = coereba))
+AIC(lm(shape ~ log10(area), data = coereba))
+
+# Loxigilla
+lox <- subset(df, genus == 'Loxigilla')
+summary(lox)
+summary(lm(shape ~ log10(spp.rich), data = lox))
+AIC(lm(shape ~ log10(spp.rich), data = lox))
+summary(lm(shape ~ log10(area), data = lox))
+AIC(lm(shape ~ log10(area), data = lox))
+summary(lm(shape ~ log10(spp.rich) + species, data = lox))
+anova(lm(shape ~ log10(spp.rich) + species, data = lox))
+AIC(lm(shape ~ log10(spp.rich) + species, data = lox))
+
+# Tiaris
+tiaris <- subset(df, genus == 'Tiaris')
+summary(tiaris)
+summary(lm(shape ~ log10(spp.rich), data = tiaris))
+AIC(lm(shape ~ log10(spp.rich), data = tiaris))
+summary(lm(shape ~ log10(area), data = tiaris))
+AIC(lm(shape ~ log10(area), data = tiaris))
+summary(lm(shape ~ log10(spp.rich) + species, data = tiaris))
+AIC(lm(shape ~ log10(spp.rich) + species, data = tiaris))
+anova(lm(shape ~ log10(spp.rich) + species, data = tiaris))
+
+# Todiramphus
+todi <- subset(df, genus == 'Todiramphus')
+summary(todi)
+summary(lm(shape ~ log10(spp.rich), data = todi))
+AIC(lm(shape ~ log10(spp.rich), data = todi))
+summary(lm(shape ~ log10(area), data = todi))
+AIC(lm(shape ~ log10(area), data = todi))
+summary(lm(shape ~ log10(spp.rich) + species, data = todi))
+AIC(lm(shape ~ log10(spp.rich) + species, data = todi))
+anova(lm(shape ~ log10(spp.rich) + species, data = todi))
+
+# Zosteropidiae
+zost <- subset(df, family == 'Zosteropidae')
+summary(zost)
+summary(lm(shape ~ log10(spp.rich), data = zost))
+AIC(lm(shape ~ log10(spp.rich), data = zost))
+summary(lm(shape ~ log10(area), data = zost))
+AIC(lm(shape ~ log10(area), data = zost))
+summary(lm(shape ~ log10(spp.rich) + species, data = zost))
+AIC(lm(shape ~ log10(spp.rich) + species, data = zost))
+anova(lm(shape ~ log10(spp.rich) + species, data = zost))
+
+# Trochilidae
+
 
 
 
