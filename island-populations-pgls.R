@@ -50,9 +50,13 @@ populations <- ddply(sub.data, c('family', 'genus', 'species', 'island'),
                          spp.rich = mean(x$landbird.spp.richness, na.rm = T),
                          area = mean(x$island.area, na.rm = T),
                          pc1 = mean(x$pc1, na.rm = T),
+                         sd.pc1 = sd(x$pc1, na.rm = T),
                          keel.resid = mean(x$keel.resid, na.rm = T),
+                         sd.keel = sd(x$keel.resid, na.rm = T),
                          tarso.resid = mean(x$tarso.resid, na.rm = T),
+                         sd.tarso = sd(x$tarso.resid, na.rm = T),
                          shape = mean(x$shape, na.rm = T),
+                         sd.shape = sd(x$shape, na.rm = T),
                          nsample = nrow(x))
                      })
 populations$spp.island <- paste(populations$species, populations$island, sep = '_')
@@ -83,9 +87,13 @@ mass <- populations$mass
 spp.rich <- populations$spp.rich
 area <- populations$area
 pc1 <- populations$pc1
+sd.pc1 <- populations$sd.pc1
 keel.resid <- populations$keel.resid
+sd.keel <- populations$sd.keel
 tarso.resid <- populations$tarso.resid
+sd.tarso <- populations$sd.tarso
 shape <- populations$shape
+sd.shape <- populations$sd.shape
 nsample <- populations$nsample
 spp.island <- populations$spp.island
 
@@ -93,10 +101,11 @@ names(family) <- names(genus) <- names(species) <- names(island) <- names(craniu
   names(rostrum.width) <- names(rostrum.depth) <- names(coracoid) <- names(sternum) <- names(keel.length) <- names(keel.depth) <- 
   names(humerus) <- names(ulna) <- names(carpometacarpus) <- names(femur) <- names(tibiotarsus) <- names(tarsometatarsus) <- 
   names(mass) <- names(spp.rich) <- names(area) <- names(pc1) <- names(keel.resid) <- names(tarso.resid) <- 
-  names(shape) <- names(nsample) <- names(spp.island) <- spp.island
+  names(shape) <- names(nsample) <- names(spp.island) <- names(sd.pc1) <- names(sd.keel) <- 
+  names(sd.tarso) <- names(sd.shape) <- spp.island
 df <- data.frame(family, genus, species, island, cranium, rostrum.length, rostrum.width, rostrum.depth, coracoid, sternum, keel.length,
                  keel.depth, humerus, ulna, carpometacarpus, femur, tibiotarsus, tarsometatarsus, mass, spp.rich, area, pc1, 
-                 shape, keel.resid, tarso.resid, nsample, spp.island)
+                 shape, keel.resid, tarso.resid, sd.pc1, sd.keel, sd.tarso, sd.shape, nsample, spp.island)
 summary(df)
 
 # Some populations were missing data, and so are in the original tree but can't be included in our analyses
@@ -145,13 +154,25 @@ plot(pic.shape ~ pic.spp.rich)
 plot(pic.tarso.resid ~ pic.spp.rich)
 
 # non phylo analyses of population averages
+# all taxa combined
 # shape
 summary(lm(shape ~ log10(spp.rich), data = df))
-summary(lm(shape ~ log10(spp.rich) + family), data = df)
+AIC(lm(shape ~ log10(spp.rich), data = df))
+summary(lm(shape ~ log10(spp.rich) + family, data = df))
+AIC(lm(shape ~ log10(spp.rich) + family, data = df))
 summary(lm(shape ~ family, data = df))
+AIC(lm(shape ~ family, data = df))
+summary(lm(shape ~ log10(area), data = df))
+AIC(lm(shape ~ log10(area), data = df))
+summary(lm(shape ~ log10(area) + family, data = df))
+AIC(lm(shape ~ log10(area) + family, data = df))
+
 # R^2 for shape ~ spp.rich after accounting for family differences
 1 - (summary(lm(shape ~ log10(spp.rich) + family), data = df)$sigma/summary(lm(shape ~ family, data = df))$sigma)^2
 plot(shape ~ log10(spp.rich), data = df)
+summary(lm(shape ~ log10(spp.rich) + genus, data = df))
+summary(lm(shape ~ log10(spp.rich) + species, data = df)) # overfiting the model - 172 & 193 DF's!
+
 # keel
 summary(lm(keel.resid ~ log10(spp.rich), data = df))
 summary(lm(keel.resid ~ log10(spp.rich) + family), data = df)
@@ -159,6 +180,10 @@ plot(keel.resid ~ log10(spp.rich), data = df)
 # tarsometatarsus
 summary(lm(tarso.resid ~ log10(spp.rich), data = df))
 plot(tarso.resid ~ log10(spp.rich), data = df)
+# pc1 
+summary(lm(pc1 ~ log10(spp.rich), data = df))
+summary(lm(pc1 ~ log10(area), data = df))
+summary(lm(pc1 ~ log10(spp.rich) + family, data = df))
 
 # are patterns stronger when we look at within-family relationships?
 # Colubidae
@@ -181,14 +206,28 @@ AIC(lm(shape ~ species, data = ptil))
 summary(lm(keel.resid ~ log10(spp.rich), data = ptil))
 summary(lm(tarso.resid ~ log10(spp.rich), data = ptil))
 plot(shape ~ log10(spp.rich), data = ptil)
+# body size
+summary(lm(pc1 ~ log10(spp.rich), data = ptil))
+AIC(lm(pc1 ~ log10(spp.rich), data = ptil))
+summary(lm(pc1 ~ log10(area), data = ptil))
+AIC(lm(pc1 ~ log10(area), data = ptil))
+summary(lm(pc1 ~ log10(spp.rich) + species, data = ptil))
+AIC(lm(pc1 ~ log10(spp.rich) + species, data = ptil))
+anova(lm(pc1 ~ log10(spp.rich) + species, data = ptil))
 
 # Ducula
 duc <- subset(df, genus == 'Ducula')
 summary(duc)
+# air-ground shape index
 summary(lm(shape ~ log10(spp.rich), data = duc))
 summary(lm(shape ~ log10(area), data = duc))
 summary(lm(shape ~ log10(spp.rich) + species, data = duc))
 summary(lm(shape ~ species, data = duc))
+# body size
+summary(lm(pc1 ~ log10(spp.rich), data = duc))
+AIC(lm(pc1 ~ log10(spp.rich), data = duc))
+summary(lm(pc1 ~ log10(area), data = duc))
+AIC(lm(pc1 ~ log10(area), data = duc))
 
 # Columbina
 columbina <- subset(df, genus == 'Columbina')
@@ -201,10 +240,16 @@ AIC(lm(shape ~ log10(area), data = columbina))
 summary(lm(shape ~ log10(spp.rich) + species, data = columbina))
 AIC(lm(shape ~ log10(spp.rich) + species, data = columbina))
 anova(lm(shape ~ log10(spp.rich) + species, data = columbina))
+# body size
+summary(lm(pc1 ~ log10(spp.rich), data = columbina))
+AIC(lm(pc1 ~ log10(spp.rich), data = columbina))
+summary(lm(pc1 ~ log10(area), data = columbina))
+AIC(lm(pc1 ~ log10(area), data = columbina))
 
 # Macropygia
 mac <- subset(df, genus == 'Macropygia')
 summary(mac)
+# air-ground shape index
 summary(lm(shape ~ log10(spp.rich), data = mac))
 AIC(lm(shape ~ log10(spp.rich), data = mac))
 summary(lm(shape ~ log10(area), data = mac))
@@ -212,26 +257,44 @@ AIC(lm(shape ~ log10(area), data = mac))
 summary(lm(shape ~ log10(spp.rich) + species, data = mac))
 anova(lm(shape ~ log10(spp.rich) + species, data = mac))
 AIC(lm(shape ~ log10(spp.rich) + species, data = mac))
+# body size
+summary(lm(pc1 ~ log10(spp.rich), data = mac))
+AIC(lm(pc1 ~ log10(spp.rich), data = mac))
+summary(lm(pc1 ~ log10(area), data = mac))
+AIC(lm(pc1 ~ log10(area), data = mac))
 
 # Zenaida
 zen <- subset(df, genus == 'Zenaida')
 summary(zen)
+# air-ground shape index
 summary(lm(shape ~ log10(spp.rich), data = zen))
 AIC(lm(shape ~ log10(spp.rich), data = zen))
 summary(lm(shape ~ log10(area), data = zen))
 AIC(lm(shape ~ log10(area), data = zen))
+# body size
+summary(lm(pc1 ~ log10(spp.rich), data = zen))
+AIC(lm(pc1 ~ log10(spp.rich), data = zen))
+summary(lm(pc1 ~ log10(area), data = zen))
+AIC(lm(pc1 ~ log10(area), data = zen))
 
 # Coereba flaveola
 coereba <- subset(df, genus == 'Coereba')
 summary(coereba)
+# air-ground shape index
 summary(lm(shape ~ log10(spp.rich), data = coereba))
 AIC(lm(shape ~ log10(spp.rich), data = coereba))
 summary(lm(shape ~ log10(area), data = coereba))
 AIC(lm(shape ~ log10(area), data = coereba))
+# body size
+summary(lm(pc1 ~ log10(spp.rich), data = coereba))
+AIC(lm(pc1 ~ log10(spp.rich), data = coereba))
+summary(lm(pc1 ~ log10(area), data = coereba))
+AIC(lm(pc1 ~ log10(area), data = coereba))
 
 # Loxigilla
 lox <- subset(df, genus == 'Loxigilla')
 summary(lox)
+# air-ground shape index
 summary(lm(shape ~ log10(spp.rich), data = lox))
 AIC(lm(shape ~ log10(spp.rich), data = lox))
 summary(lm(shape ~ log10(area), data = lox))
@@ -239,6 +302,11 @@ AIC(lm(shape ~ log10(area), data = lox))
 summary(lm(shape ~ log10(spp.rich) + species, data = lox))
 anova(lm(shape ~ log10(spp.rich) + species, data = lox))
 AIC(lm(shape ~ log10(spp.rich) + species, data = lox))
+# body size
+summary(lm(pc1 ~ log10(spp.rich), data = lox))
+AIC(lm(pc1 ~ log10(spp.rich), data = lox))
+summary(lm(pc1 ~ log10(area), data = lox))
+AIC(lm(pc1 ~ log10(area), data = lox))
 
 # Tiaris
 tiaris <- subset(df, genus == 'Tiaris')
