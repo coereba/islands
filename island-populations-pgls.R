@@ -311,6 +311,7 @@ AIC(lm(pc1 ~ log10(area), data = lox))
 # Tiaris
 tiaris <- subset(df, genus == 'Tiaris')
 summary(tiaris)
+# air-ground shape index
 summary(lm(shape ~ log10(spp.rich), data = tiaris))
 AIC(lm(shape ~ log10(spp.rich), data = tiaris))
 summary(lm(shape ~ log10(area), data = tiaris))
@@ -318,10 +319,16 @@ AIC(lm(shape ~ log10(area), data = tiaris))
 summary(lm(shape ~ log10(spp.rich) + species, data = tiaris))
 AIC(lm(shape ~ log10(spp.rich) + species, data = tiaris))
 anova(lm(shape ~ log10(spp.rich) + species, data = tiaris))
+# body size
+summary(lm(pc1 ~ log10(spp.rich), data = tiaris))
+AIC(lm(pc1 ~ log10(spp.rich), data = tiaris))
+summary(lm(pc1 ~ log10(area), data = tiaris))
+AIC(lm(pc1 ~ log10(area), data = tiaris))
 
 # Todiramphus
 todi <- subset(df, genus == 'Todiramphus')
 summary(todi)
+# air-ground shape index
 summary(lm(shape ~ log10(spp.rich), data = todi))
 AIC(lm(shape ~ log10(spp.rich), data = todi))
 summary(lm(shape ~ log10(area), data = todi))
@@ -329,10 +336,16 @@ AIC(lm(shape ~ log10(area), data = todi))
 summary(lm(shape ~ log10(spp.rich) + species, data = todi))
 AIC(lm(shape ~ log10(spp.rich) + species, data = todi))
 anova(lm(shape ~ log10(spp.rich) + species, data = todi))
+# body size
+summary(lm(pc1 ~ log10(spp.rich), data = todi))
+AIC(lm(pc1 ~ log10(spp.rich), data = todi))
+summary(lm(pc1 ~ log10(area), data = todi))
+AIC(lm(pc1 ~ log10(area), data = todi))
 
 # Zosteropidiae
 zost <- subset(df, family == 'Zosteropidae')
 summary(zost)
+# air-ground shape index
 summary(lm(shape ~ log10(spp.rich), data = zost))
 AIC(lm(shape ~ log10(spp.rich), data = zost))
 summary(lm(shape ~ log10(area), data = zost))
@@ -340,10 +353,16 @@ AIC(lm(shape ~ log10(area), data = zost))
 summary(lm(shape ~ log10(spp.rich) + species, data = zost))
 AIC(lm(shape ~ log10(spp.rich) + species, data = zost))
 anova(lm(shape ~ log10(spp.rich) + species, data = zost))
+# body size
+summary(lm(pc1 ~ log10(spp.rich), data = zost))
+AIC(lm(pc1 ~ log10(spp.rich), data = zost))
+summary(lm(pc1 ~ log10(area), data = zost))
+AIC(lm(pc1 ~ log10(area), data = zost))
 
 # Trochilidae
 hum <- subset(df, family == 'Trochilidae')
 summary(hum)
+# air-ground shape index
 summary(lm(shape ~ log10(spp.rich), data = hum))
 AIC(lm(shape ~ log10(spp.rich), data = hum))
 summary(lm(shape ~ log10(area), data = hum))
@@ -351,10 +370,16 @@ AIC(lm(shape ~ log10(area), data = hum))
 summary(lm(shape ~ log10(spp.rich) + species, data = hum))
 AIC(lm(shape ~ log10(spp.rich) + species, data = hum))
 anova(lm(shape ~ log10(spp.rich) + species, data = hum))
+# body size
+summary(lm(pc1 ~ log10(spp.rich), data = hum))
+AIC(lm(pc1 ~ log10(spp.rich), data = hum))
+summary(lm(pc1 ~ log10(area), data = hum))
+AIC(lm(pc1 ~ log10(area), data = hum))
 
 # Rhipiduridae
 rhip <- subset(df, genus == 'Rhipidura')
 summary(rhip)
+# air-ground shape index
 summary(lm(shape ~ log10(spp.rich), data = rhip))
 AIC(lm(shape ~ log10(spp.rich), data = rhip))
 summary(lm(shape ~ log10(area), data = rhip))
@@ -362,10 +387,16 @@ AIC(lm(shape ~ log10(area), data = rhip))
 summary(lm(shape ~ log10(spp.rich) + species, data = rhip))
 AIC(lm(shape ~ log10(spp.rich) + species, data = rhip))
 anova(lm(shape ~ log10(spp.rich) + species, data = rhip))
+# body size
+summary(lm(pc1 ~ log10(spp.rich), data = rhip))
+AIC(lm(pc1 ~ log10(spp.rich), data = rhip))
+summary(lm(pc1 ~ log10(area), data = rhip))
+AIC(lm(pc1 ~ log10(area), data = rhip))
 
 # Meliphagidae
 mel <- subset(df, family == 'Meliphagidae')
 summary(mel)
+# air-ground shape index
 summary(lm(shape ~ log10(spp.rich), data = mel))
 AIC(lm(shape ~ log10(spp.rich), data = mel))
 summary(lm(shape ~ log10(area), data = mel))
@@ -373,10 +404,16 @@ AIC(lm(shape ~ log10(area), data = mel))
 summary(lm(shape ~ log10(spp.rich) + species, data = mel))
 AIC(lm(shape ~ log10(spp.rich) + species, data = mel))
 anova(lm(shape ~ log10(spp.rich) + species, data = mel))
+# body size
+summary(lm(pc1 ~ log10(spp.rich), data = mel))
+AIC(lm(pc1 ~ log10(spp.rich), data = mel))
+summary(lm(pc1 ~ log10(area), data = mel))
+AIC(lm(pc1 ~ log10(area), data = mel))
 
 # Monarchidae
 mon <- subset(df, family == 'Monarchidae')
 summary(mon)
+# air-ground shape index
 summary(lm(shape ~ log10(spp.rich), data = mon))
 AIC(lm(shape ~ log10(spp.rich), data = mon))
 summary(lm(shape ~ log10(area), data = mon))
@@ -384,10 +421,16 @@ AIC(lm(shape ~ log10(area), data = mon))
 summary(lm(shape ~ log10(spp.rich) + species, data = mon))
 AIC(lm(shape ~ log10(spp.rich) + species, data = mon))
 anova(lm(shape ~ log10(spp.rich) + species, data = mon))
+# body size
+summary(lm(pc1 ~ log10(spp.rich), data = mon))
+AIC(lm(pc1 ~ log10(spp.rich), data = mon))
+summary(lm(pc1 ~ log10(area), data = mon))
+AIC(lm(pc1 ~ log10(area), data = mon))
 
 # Pachycephala
 pach <- subset(df, genus == 'Pachycephala')
 summary(pach)
+# air-ground shape index
 summary(lm(shape ~ log10(spp.rich), data = pach))
 AIC(lm(shape ~ log10(spp.rich), data = pach))
 summary(lm(shape ~ log10(area), data = pach))
@@ -395,6 +438,11 @@ AIC(lm(shape ~ log10(area), data = pach))
 summary(lm(shape ~ log10(spp.rich) + species, data = pach))
 AIC(lm(shape ~ log10(spp.rich) + species, data = pach))
 anova(lm(shape ~ log10(spp.rich) + species, data = pach))
+# body size
+summary(lm(pc1 ~ log10(spp.rich), data = pach))
+AIC(lm(pc1 ~ log10(spp.rich), data = pach))
+summary(lm(pc1 ~ log10(area), data = pach))
+AIC(lm(pc1 ~ log10(area), data = pach))
 
 
 
