@@ -444,6 +444,21 @@ AIC(lm(pc1 ~ log10(spp.rich), data = pach))
 summary(lm(pc1 ~ log10(area), data = pach))
 AIC(lm(pc1 ~ log10(area), data = pach))
 
-
-
+##############################
+#### FIGURES ####
+king <- subset(df, family == 'Alcedinidae')
+par(mfcol = c(2, 3))
+par(mar = c(1,1,1,1))
+plot(shape ~ log10(spp.rich), data = doves, pch = 21, bg = 'gray', cex = 2)
+segments(x0 = log10(doves$spp.rich), y0 = doves$shape-doves$sd.shape, y1 = doves$shape+doves$sd.shape)
+plot(shape ~ log10(spp.rich), pch = 21, bg = 'gray', data = king, cex = 2)
+segments(x0 = log10(king$spp.rich), y0 = (king$shape-king$sd.shape), y1 = (king$shape+king$sd.shape))
+plot(shape ~ log10(spp.rich), data = coereba, pch = 21, bg = 'gray', cex = 2)
+segments(x0 = log10(coereba$spp.rich), y0 = coereba$shape-coereba$sd.shape, y1 = coereba$shape+coereba$sd.shape)
+plot(shape ~ log10(spp.rich), data = tiaris, pch = 21, bg = 'gray', cex = 2)
+segments(x0 = log10(tiaris$spp.rich), y0 = tiaris$shape-tiaris$sd.shape, y1 = tiaris$shape+tiaris$sd.shape)
+plot(shape ~ log10(spp.rich), data = pach, pch = 21, bg = 'gray', cex = 2)
+segments(x0 = log10(pach$spp.rich), y0 = pach$shape-pach$sd.shape, y1 = pach$shape+pach$sd.shape)
+plot(shape ~ log10(spp.rich), data = mon, pch = 21, bg = 'gray', cex = 2)
+segments(x0 = log10(mon$spp.rich), y0 = mon$shape-mon$sd.shape, y1 = mon$shape+mon$sd.shape)
 
