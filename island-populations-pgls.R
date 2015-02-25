@@ -444,6 +444,26 @@ AIC(lm(pc1 ~ log10(spp.rich), data = pach))
 summary(lm(pc1 ~ log10(area), data = pach))
 AIC(lm(pc1 ~ log10(area), data = pach))
 
+############
+## island character relationships
+# don't actually need to average these values, because they're the same for each entry of the same island
+# but I'm not sure how else to do this... so...
+islands.df <- ddply(sub.data, 'island', 
+                    function(x){
+                      c(area = mean(x$island.area, na.rm = T),
+                      spp.rich = mean(x$landbird.spp.richness, na.rm = T),
+                      elevation = mean(x$elevation, na.rm = T),
+                      nearest.cont = mean(x$nearest.continent, na.rm = T),
+                      isolation = mean(x$isolation, na.rm = T),
+                      raptor.spp = mean(x$raptor.spp, na.rm = T),
+                      columbid.spp = mean(x$columbid.spp, na.rm = T),
+                      kingfisher.spp = mean(x$kingfisher.spp, na.rm = T) )
+                    })
+summary(lm(log10(spp.rich) ~ log10(area), data = islands.df))
+summary(lm(log10(spp.rich) ~ elevation, data = islands.df))
+summary(lm(log10(spp.rich) ~ nearest.cont, data = islands.df))
+summary(lm(log10(spp.rich) ~ log10(area) + nearest.cont, data = islands.df))
+
 ##############################
 #### FIGURES ####
 par(mfcol = c(2, 3))
@@ -476,4 +496,6 @@ mtext('log species richness', cex = 2, side = 1, outer = TRUE, padj = 1)
 mtext('air-ground index', cex = 2, side = 2, line = 3, outer = TRUE, padj = 0)
 mtext('(larger flight muscles, shorter legs)', cex = 1.5, side = 2, line = 0.3, outer = TRUE, padj = 0)
 
-
+####
+par(mar = c(0,0,0,0), oma = c(0,0,0,0))
+par(mfcol = c(1, 1))
