@@ -209,6 +209,7 @@ str(restrict.df)
 skel.data <- read.csv('skeletal_data.csv', header = T)
 sub.data <- subset(skel.data, keel.length != 'NA' & coracoid != 'NA' & femur != 'NA' & humerus != 'NA' & tarsometatarsus != 'NA') 
 summary(sub.data)
+
 ### first look at individual-level correlation 
 # FLMNH/UF specimens are the only ones that we have both skel data & flight muscle mass for same individuals
 uf.skel <- subset(sub.data, institution == 'FLMNH')
@@ -237,8 +238,8 @@ summary(lm(tarso.resid ~ flight.body, data = skel.muscle))
 # analyze raw values (not body size-corrected)
 summary(lm(keel.length ~ flight, data = skel.muscle))
 
-## look at relationship between keel length & flight muscle mass within species
-# Coereba flaveola
+##### look at relationship between keel length & flight muscle mass within species
+## Coereba flaveola
 coereba <- subset(skel.muscle, species == 'Coereba_flaveola')
 # run the PCA on just coereba specimens to encompass greater span of variation
 coereba.pca.data <- coereba[, c('coracoid', 'femur', 'humerus', 'tarsometatarsus')]
@@ -248,33 +249,117 @@ coereba.pca
 coereba$coereba.pc1 <- coereba.pca$x[,1]
 coereba$coereba.keel.resid <- lm(coereba$keel.length ~ coereba$coereba.pc1)$residuals
 coereba$coereba.tarso.resid <- lm(coereba$tarsometatarsus ~ coereba$coereba.pc1)$residuals
-#analyze relationship between keel length & flight muscle mass in just Coereba flaveola
 summary(lm(coereba.keel.resid ~ flight.body, data = coereba))
 summary(lm(keel.resid ~ flight.body, data = coereba))
 summary(lm(keel.length ~ flight, data = coereba))
 summary(lm(tarso.resid ~ flight.body, data = coereba))
-
 ## Macropygia mackinlayi
 mac <- subset(skel.muscle, species == 'Macropygia_mackinlayi')
 summary(mac)
 summary(lm(keel.resid ~ flight.body, data = mac))
 summary(lm(keel.length ~ flight, data = mac))
 summary(lm(flight.body ~ log10(landbird.spp.richness), data = mac))
-
 ## Ptilinopus
 ptil <- subset(skel.muscle, genus == 'Ptilinopus')
 summary(ptil)
 summary(lm(keel.resid ~ flight.body, data = ptil))
 summary(lm(keel.length ~ flight, data = ptil))
-
 ## Zosterops
 zost <- subset(skel.muscle, genus == 'Zosterops')
 summary(zost)
 summary(lm(keel.resid ~ flight.body, data = zost))
 summary(lm(keel.length ~ flight, data = zost))
-
 ## Rhipidura
 rhip <- subset(skel.muscle, genus == 'Rhipidura')
 summary(rhip)
 summary(lm(keel.resid ~ flight.body, data = rhip))
 summary(lm(keel.length ~ flight, data = rhip))
+
+##### relationship between keel & flight muscle mass across species averages
+### average skeletal data across species
+## PCA on skel data
+pca.data1 <- sub.data[, c('coracoid', 'femur', 'humerus', 'tarsometatarsus')]
+pca1 <- prcomp(pca.data1, scale = T)
+summary(pca1)
+pca1
+sub.data$pc1 <- pca1$x[, 1]*-1
+sub.data$keel.resid <- lm(sub.data$keel.length ~ sub.data$pc1)$residuals
+sub.data$tarso.resid <- lm(sub.data$tarsometatarsus ~ sub.data$pc1)$residuals
+# PCA for creating an index of shape - tarso length and keel size
+keel.pca.data <- sub.data[, c('keel.length', 'tarsometatarsus')]
+keel.pca <- prcomp(keel.pca.data, scale = T)
+summary(keel.pca)
+keel.pca
+sub.data$shape <- keel.pca$x[, 2]*-1 #shape is larger flight muscles and smaller legs
+skel.spp.ave <- ddply(sub.data, c('family', 'genus', 'species'),
+                     function(x){
+                       c(cranium = mean(x$cranium.length, na.rm = T),
+                         rostrum.length = mean(x$rostrum.length, na.rm = T),
+                         rostrum.width = mean(x$rostrum.width, na.rm = T),
+                         rostrum.depth = mean(x$rostrum.depth, na.rm = T),
+                         coracoid = mean(x$coracoid, na.rm = T),
+                         sternum = mean(x$sternum.length, na.rm = T),
+                         keel.length = mean(x$keel.length, na.rm = T),
+                         keel.depth = mean(x$keel.depth, na.rm = T),
+                         humerus = mean(x$humerus, na.rm = T),
+                         ulna = mean(x$ulna, na.rm = T),
+                         carpometacarpus = mean(x$carpometacarpus, na.rm = T),
+                         femur = mean(x$femur, na.rm = T),
+                         tibiotarsus = mean(x$tibiotarsus, na.rm = T),
+                         tarsometatarsus = mean(x$tarsometatarsus, na.rm = T),
+                         mass = mean(x$mass, na.rm = T),
+                         spp.rich = mean(x$landbird.spp.richness, na.rm = T),
+                         area = mean(x$island.area, na.rm = T),
+                         pc1 = mean(x$pc1, na.rm = T),
+                         sd.pc1 = sd(x$pc1, na.rm = T),
+                         keel.resid = mean(x$keel.resid, na.rm = T),
+                         sd.keel = sd(x$keel.resid, na.rm = T),
+                         tarso.resid = mean(x$tarso.resid, na.rm = T),
+                         sd.tarso = sd(x$tarso.resid, na.rm = T),
+                         shape = mean(x$shape, na.rm = T),
+                         sd.shape = sd(x$shape, na.rm = T),
+                         nsample = nrow(x))
+                     })
+summary(skel.spp.ave)
+str(skel.spp.ave)
+
+# we have multiple columns with identical names in skel.spp.ave and df dataframes
+# so I'm going to reduce df to just the relevant columns
+df.small <- df[, c('order', 'species', 'island.restricted', 'small.island.restricted', 'mass', 'flight',
+                   'flight.body', 'pect.supra.ratio', 'heart.ratio')]
+colnames(df.small) <- c('order', 'species', 'island.restricted', 'small.island.restricted',
+                        'body.mass', 'flight', 'flight.body', 'pect.supra.ratio', 'heart.ratio')
+skel.muscle.ave <- merge(skel.spp.ave, df.small)
+summary(skel.muscle.ave)
+str(skel.muscle.ave)
+## manually check for taxonomy differences between skeletal & flight muscle datasets
+not.in.df <- subset(skel.spp.ave$species, !(skel.spp.ave$species %in% df.small$species))
+not.in.df
+
+summary(lm(keel.resid ~ flight.body, data = skel.muscle.ave))
+
+# PGLS on skeletal & flight muscle species averages
+not.combined <- subset(tree$tip.label, !(tree$tip.label %in% skel.muscle.ave$species))
+combined.tree <- drop.tip(tree, not.combined)
+combined.bm <- corBrownian(phy = combined.tree)
+rownames(skel.muscle.ave) <- skel.muscle.ave$species
+combined1 <- gls(keel.resid ~ flight.body, data = skel.muscle.ave, correlation = combined.bm)
+summary(combined1)
+combined.null <- gls(keel.resid ~ 1, data = skel.muscle.ave, correlation = combined.bm)
+summary(combined.null)
+1 - (combined1$sigma/combined.null$sigma)^2 #R^2 value
+combined2 <- gls(keel.length ~ flight, data = skel.muscle.ave, correlation = combined.bm)
+summary(combined2)
+null2 <- gls(keel.length ~ 1, data = skel.muscle.ave, correlation = combined.bm)
+1 - (combined2$sigma/null2$sigma)^2
+
+## Phylogenetic independent contrasts
+p.skel.muscle.ave <- skel.muscle.ave[match(combined.tree$tip.label, skel.muscle.ave$species),]
+# calculate PICs
+pic.keel.resid <- pic(p.skel.muscle.ave$keel.resid, combined.tree)
+pic.keel.length <- pic(p.skel.muscle.ave$keel.length, combined.tree)
+pic.flight.body <- pic(p.skel.muscle.ave$flight.body, combined.tree)
+pic.flight <- pic(p.skel.muscle.ave$flight, combined.tree)
+summary(lm(pic.keel.resid ~ pic.flight.body -1))
+summary(lm(pic.keel.length ~ pic.flight - 1))
+
