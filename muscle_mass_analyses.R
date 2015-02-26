@@ -147,15 +147,25 @@ summary(df)
 
 summary(lm(flight.body ~ family, data = df))
 
+bm <- corBrownian(phy = tree)
+m1 <- gls(flight.body ~ small.island.restricted, data = df, correlation = bm)
+summary(m1)
+
+# look at just the landbirds
 landbird.df <- subset(df, order != 'charadriiformes' & order != 'ciconiiformes' & order != 'pelecaniformes' & order != 'phaethontiformes'
-                      & order != 'podicipediformes' & order != 'procellariiformes' & order != 'suliformes')
+                      & order != 'podicipediformes' & order != 'procellariiformes' & order != 'suliformes' 
+                      & order != 'anseriformes')
 not.landbirds <- subset(tree$tip.label, !(tree$tip.label %in% landbird.df$species))
 landbird.tree <- drop.tip(tree, not.landbirds)
-bm <- corBrownian(phy = tree)
 landbird.bm <- corBrownian(phy = landbird.tree)
-landbird1 <- gls(flight.body ~ oceanic.island.restricted, data = landbird.df, correlation = landbird.bm)
+landbird1 <- gls(flight.body ~ small.island.restricted, data = landbird.df, correlation = landbird.bm)
 summary(landbird1)
+landbird2 <- gls(flight.body ~ island.restricted, data = landbird.df, correlation = landbird.bm)
+summary(landbird2)
+landbird.null <- gls(flight.body ~ 1, data = landbird.df, correlation = landbird.bm)
+summary(landbird.null)
 
+#look at just the columbids
 columb <- subset(df, order == 'columbiformes')
 columb.tree <- drop.tip(tree, subset(tree$tip.label, !(tree$tip.label %in% columb$species)))
 columb.bm <- corBrownian(phy = columb.tree)
@@ -163,7 +173,11 @@ col1 <- gls(flight.body ~ small.island.restricted, data = columb, correlation = 
 summary(col1)
 col2 <- gls(flight.body ~ island.restricted, data = columb, correlation = columb.bm)
 summary(col2)
-boxplot(flight.body ~ small.island.restricted, data = columb)
+## figure of columbid results
+par(mar = c(4,6,1,1))
+boxplot(flight.body ~ small.island.restricted, data = columb, cex.axis = 2, col = 'gray',
+        ylab = 'relative flight muscle size', cex.lab = 2,
+        names = c('continental', 'restricted to islands'))
 boxplot(flight.body ~ island.restricted, data = columb, correlation = columb.bm)
 
 pass <- subset(df, order == 'passeriformes')
@@ -189,3 +203,78 @@ summary(null.model)
 
 summary(restrict.df)
 str(restrict.df)
+
+###################
+## link between keel length and flight muscle mass
+skel.data <- read.csv('skeletal_data.csv', header = T)
+sub.data <- subset(skel.data, keel.length != 'NA' & coracoid != 'NA' & femur != 'NA' & humerus != 'NA' & tarsometatarsus != 'NA') 
+summary(sub.data)
+### first look at individual-level correlation 
+# FLMNH/UF specimens are the only ones that we have both skel data & flight muscle mass for same individuals
+uf.skel <- subset(sub.data, institution == 'FLMNH')
+summary(uf.skel)
+# we have multiple columns with identical names in uf.skel and data dataframes
+# these can create problems using merge() if the entries aren't identical 
+# for example, if the datasets use slightly different taxonomies
+# so I'm going to reduce the dataframe data to just the relevant columns
+small.data <- data[, c('numb', 'order', 'genus_species', 'body_mass', 'flight_both', 'flight_both_body', 'pect_supra_ratio', 'heart_body')]
+# rename the column names to match those in uf.skel, and to make the unique ones easier to type
+colnames(small.data) <- c('number', 'order', 'genus.species', 'body.mass', 'flight', 'flight.body', 'pect.supra.ratio', 'heart.body')
+# merge datasets
+skel.muscle <- merge(uf.skel, small.data)
+str(skel.muscle)
+# PCA for correcting for body size, calculated across all species
+pca.data <- skel.muscle[, c('coracoid', 'femur', 'humerus', 'tarsometatarsus')]
+pca <- prcomp(pca.data, scale = T)
+summary(pca)
+pca
+skel.muscle$pc1 <- pca$x[, 1]*-1
+skel.muscle$keel.resid <- lm(skel.muscle$keel.length ~ skel.muscle$pc1)$residuals
+skel.muscle$tarso.resid <- lm(skel.muscle$tarsometatarsus ~ skel.muscle$pc1)$residuals
+# analyses on body size-corrected values
+summary(lm(keel.resid ~ flight.body, data = skel.muscle))
+summary(lm(tarso.resid ~ flight.body, data = skel.muscle))
+# analyze raw values (not body size-corrected)
+summary(lm(keel.length ~ flight, data = skel.muscle))
+
+## look at relationship between keel length & flight muscle mass within species
+# Coereba flaveola
+coereba <- subset(skel.muscle, species == 'Coereba_flaveola')
+# run the PCA on just coereba specimens to encompass greater span of variation
+coereba.pca.data <- coereba[, c('coracoid', 'femur', 'humerus', 'tarsometatarsus')]
+coereba.pca <- prcomp(coereba.pca.data, scale = T)
+summary(coereba.pca)
+coereba.pca
+coereba$coereba.pc1 <- coereba.pca$x[,1]
+coereba$coereba.keel.resid <- lm(coereba$keel.length ~ coereba$coereba.pc1)$residuals
+coereba$coereba.tarso.resid <- lm(coereba$tarsometatarsus ~ coereba$coereba.pc1)$residuals
+#analyze relationship between keel length & flight muscle mass in just Coereba flaveola
+summary(lm(coereba.keel.resid ~ flight.body, data = coereba))
+summary(lm(keel.resid ~ flight.body, data = coereba))
+summary(lm(keel.length ~ flight, data = coereba))
+summary(lm(tarso.resid ~ flight.body, data = coereba))
+
+## Macropygia mackinlayi
+mac <- subset(skel.muscle, species == 'Macropygia_mackinlayi')
+summary(mac)
+summary(lm(keel.resid ~ flight.body, data = mac))
+summary(lm(keel.length ~ flight, data = mac))
+summary(lm(flight.body ~ log10(landbird.spp.richness), data = mac))
+
+## Ptilinopus
+ptil <- subset(skel.muscle, genus == 'Ptilinopus')
+summary(ptil)
+summary(lm(keel.resid ~ flight.body, data = ptil))
+summary(lm(keel.length ~ flight, data = ptil))
+
+## Zosterops
+zost <- subset(skel.muscle, genus == 'Zosterops')
+summary(zost)
+summary(lm(keel.resid ~ flight.body, data = zost))
+summary(lm(keel.length ~ flight, data = zost))
+
+## Rhipidura
+rhip <- subset(skel.muscle, genus == 'Rhipidura')
+summary(rhip)
+summary(lm(keel.resid ~ flight.body, data = rhip))
+summary(lm(keel.length ~ flight, data = rhip))
