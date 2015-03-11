@@ -5,6 +5,7 @@ str(data)
 require(nlme)
 require(plyr)
 require(ape)
+require(phytools)
 
 # first reduce dataset to only specimens without missing measurements of key skeletal elements
 # remove non-island populations
@@ -447,7 +448,7 @@ AIC(lm(pc1 ~ log10(area), data = pach))
 ############
 ## island character relationships
 # don't actually need to average these values, because they're the same for each entry of the same island
-# but I'm not sure how else to do this... so...
+# but I'm not sure how to do this more efficiently... so...
 islands.df <- ddply(sub.data, 'island', 
                     function(x){
                       c(area = mean(x$island.area, na.rm = T),
@@ -499,3 +500,43 @@ mtext('(larger flight muscles, shorter legs)', cex = 1.5, side = 2, line = 0.3, 
 ####
 par(mar = c(0,0,0,0), oma = c(0,0,0,0))
 par(mfcol = c(1, 1))
+
+##########
+### Tree figures
+# get data in correct format for using phytools contMap()
+shape <- df$shape
+names(shape) <- df$spp.island
+# order shape to match the order of the tree species
+shape <- shape[tree$tip.label]
+# tree has branch lengths that are too short for contMap
+figtree <- tree
+figtree$edge.length <- figtree$edge.length*100000
+obj <- contMap(tree, shape, res = 1000, plot=FALSE)
+plot(obj, type = 'fan')
+
+### just todiramphus kingfishers
+todi.tree <- drop.tip(tree, subset(tree$tip.label, !(tree$tip.label %in% todi$spp.island)))
+str(todi.tree)  
+todishape <- todi$shape
+names(todishape) <- todi$spp.island
+todishape <- todishape[todi.tree$tip.label]
+todi.obj <- contMap(todi.tree, todishape, plot=FALSE)
+plot(todi.obj)
+todirich <- log10(todi$spp.rich)
+names(todirich) <- todi$spp.island
+todirich <- todirich[todi.tree$tip.label]
+todi.rich.obj <- contMap(todi.tree, todirich)
+layout(matrix(1:2, 1, 2), width = c(1, 1))
+par(mar = c(0, 0, 0, 0))
+plot(setMap(todi.obj, colors=c('white', 'black')), 
+     ftype = 'off', lwd = 7, legend=FALSE)
+plot(setMap(todi.rich.obj, colors=c('white', 'black')), 
+     direction = 'leftwards', ftype = 'off', lwd = 7, legend=FALSE)
+
+todi.data <- subset(todi, select = c('keel.resid', 'spp.rich', 'tarso.resid'))
+todi.data$spp.rich <- log10(todi.data$spp.rich)
+todi.data <- todi.data[match(todi.tree$tip.label, rownames(todi.data)),]
+colnames(todi.data) <- c('keel length', 'log species richness', 'tarsometatarsus')
+todi.mat <- as.matrix(todi.data)
+fancyTree(todi.tree, type='scattergram', X = todi.mat, label='off', colors=c('white', 'black'))
+
