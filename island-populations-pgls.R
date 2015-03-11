@@ -514,6 +514,7 @@ figtree$edge.length <- figtree$edge.length*100000
 obj <- contMap(tree, shape, res = 1000, plot=FALSE)
 plot(obj, type = 'fan')
 
+####### paired trees showing shape variable & species richness 
 ### just todiramphus kingfishers
 todi.tree <- drop.tip(tree, subset(tree$tip.label, !(tree$tip.label %in% todi$spp.island)))
 str(todi.tree)  
@@ -533,6 +534,27 @@ plot(setMap(todi.obj, colors=c('white', 'black')),
 plot(setMap(todi.rich.obj, colors=c('white', 'black')), 
      direction = 'leftwards', ftype = 'off', lwd = 7, legend=FALSE)
 
+### doves
+doves.tree <- drop.tip(tree, subset(tree$tip.label, !(tree$tip.label %in% doves$spp.island)))
+str(doves.tree)
+dovesshape <- doves$shape
+names(dovesshape) <- doves$spp.island
+dovesshape <- dovesshape[doves.tree$tip.label]
+doves.obj <- contMap(doves.tree, dovesshape, plot=FALSE)
+plot(doves.obj)
+dovesrich <- log10(doves$spp.rich)
+names(dovesrich) <- doves$spp.island
+dovesrich <- dovesrich[doves.tree$tip.label]
+doves.rich.obj <- contMap(doves.tree, dovesrich, plot=FALSE)
+plot(doves.rich.obj)
+layout(matrix(1:2, 1, 2), width = c(1,1))
+plot(setMap(doves.obj, colors=c('white', 'black')),
+     ftype = 'off', lwd = 7, legend=FALSE)
+plot(setMap(doves.rich.obj, colors=c('white', 'black')),
+     direction = 'leftwards', ftype = 'off', lwd = 7, legend=FALSE)
+
+######## phylomorphospace plots 
+## todiramphus
 todi.data <- subset(todi, select = c('keel.resid', 'spp.rich', 'tarso.resid'))
 todi.data$spp.rich <- log10(todi.data$spp.rich)
 todi.data <- todi.data[match(todi.tree$tip.label, rownames(todi.data)),]
@@ -540,3 +562,9 @@ colnames(todi.data) <- c('keel length', 'log species richness', 'tarsometatarsus
 todi.mat <- as.matrix(todi.data)
 fancyTree(todi.tree, type='scattergram', X = todi.mat, label='off', colors=c('white', 'black'))
 
+doves.data <- subset(doves, select = c('keel.resid', 'spp.rich', 'tarso.resid'))
+doves.data$spp.rich <- log10(doves.data$spp.rich)
+doves.data <- doves.data[match(doves.tree$tip.label, rownames(doves.data)),]
+colnames(doves.data) <- c('keel length', 'log species richness', 'tarsometatarsus')
+doves.mat <- as.matrix(doves.data)
+fancyTree(doves.tree, type='scattergram', X = doves.mat, label='off')
