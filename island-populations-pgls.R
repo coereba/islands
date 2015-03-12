@@ -515,24 +515,29 @@ obj <- contMap(tree, shape, res = 1000, plot=FALSE)
 plot(obj, type = 'fan')
 
 ####### paired trees showing shape variable & species richness 
-### just todiramphus kingfishers
-todi.tree <- drop.tip(tree, subset(tree$tip.label, !(tree$tip.label %in% todi$spp.island)))
-str(todi.tree)  
-todishape <- todi$shape
-names(todishape) <- todi$spp.island
-todishape <- todishape[todi.tree$tip.label]
-todi.obj <- contMap(todi.tree, todishape, plot=FALSE)
-plot(todi.obj)
-todirich <- log10(todi$spp.rich)
-names(todirich) <- todi$spp.island
-todirich <- todirich[todi.tree$tip.label]
-todi.rich.obj <- contMap(todi.tree, todirich)
+### just kingfishers
+king <- subset(df, family == 'Alcedinidae')
+king.tree <- drop.tip(tree, subset(tree$tip.label, !(tree$tip.label %in% king$spp.island)))
+str(king.tree)  
+kingshape <- king$shape
+names(kingshape) <- king$spp.island
+kingshape <- kingshape[king.tree$tip.label]
+king.obj <- contMap(king.tree, kingshape, plot=FALSE)
+plot(king.obj)
+kingrich <- log10(king$spp.rich)
+names(kingrich) <- king$spp.island
+kingrich <- kingrich[king.tree$tip.label]
+king.rich.obj <- contMap(king.tree, kingrich)
 layout(matrix(1:2, 1, 2), width = c(1, 1))
-par(mar = c(0, 0, 0, 0))
-plot(setMap(todi.obj, colors=c('white', 'black')), 
+par(mar = c(0,0,0,0), oma = c(0.3, 0.3, 5, 0.3))
+plot(setMap(king.obj, colors=c('white', 'black')), 
      ftype = 'off', lwd = 7, legend=FALSE)
-plot(setMap(todi.rich.obj, colors=c('white', 'black')), 
+plot(setMap(king.rich.obj, colors=c('white', 'black')), 
      direction = 'leftwards', ftype = 'off', lwd = 7, legend=FALSE)
+mtext('log species richness', cex = 2, side = 3, outer = TRUE, adj = 1, padj = 0.5)
+mtext('air-ground index', cex = 2, side = 3, outer = TRUE, adj = 0, padj = 0.5)
+mtext('Kingfishers', cex = 2, side = 3, outer = TRUE, line = 2)
+
 
 ### doves
 doves.tree <- drop.tip(tree, subset(tree$tip.label, !(tree$tip.label %in% doves$spp.island)))
@@ -548,23 +553,58 @@ dovesrich <- dovesrich[doves.tree$tip.label]
 doves.rich.obj <- contMap(doves.tree, dovesrich, plot=FALSE)
 plot(doves.rich.obj)
 layout(matrix(1:2, 1, 2), width = c(1,1))
+par(mar = c(0,0,0,0), oma = c(0.3, 0.3, 5, 0.3))
 plot(setMap(doves.obj, colors=c('white', 'black')),
      ftype = 'off', lwd = 7, legend=FALSE)
 plot(setMap(doves.rich.obj, colors=c('white', 'black')),
      direction = 'leftwards', ftype = 'off', lwd = 7, legend=FALSE)
+mtext('log species richness', cex = 2, side = 3, outer = TRUE, adj = 1, padj = 0.5)
+mtext('air-ground index', cex = 2, side = 3, outer = TRUE, adj = 0, padj = 0.5)
+mtext('Columbidae', cex = 2, side = 3, outer = TRUE, line = 2)
+
+## tanagers
+thraup <- subset(df, family == 'Thraupidae')
+thraup.tree <- drop.tip(tree, subset(tree$tip.label, !(tree$tip.label %in% thraup$spp.island)))
+str(thraup.tree)
+thraupshape <- thraup$shape
+names(thraupshape) <- thraup$spp.island
+thraupshape <- thraupshape[thraup.tree$tip.label]
+thraup.obj <- contMap(thraup.tree, thraupshape, plot=FALSE)
+thrauprich <- log10(thraup$spp.rich)
+names(thrauprich) <- thraup$spp.island
+thrauprich <- thrauprich[thraup.tree$tip.label]
+thrauprich.obj <- contMap(thraup.tree, thrauprich, plot=FALSE)
+layout(matrix(1:2, 1, 2), width = c(1,1))
+par(mar = c(0,0,0,0), oma = c(0.3, 0.3, 5, 0.3))
+plot(setMap(thraup.obj, colors=c('white', 'black')),
+     ftype = 'off', lwd = 7, legend = FALSE)
+plot(setMap(thrauprich.obj, colors = c('white', 'black')),
+     direction = 'leftwards', ftype = 'off', lwd = 7, legend = FALSE)
+mtext('log species richness', cex = 2, side = 3, outer = TRUE, adj = 1, padj = 0.5)
+mtext('air-ground index', cex = 2, side = 3, outer = TRUE, adj = 0, padj = 0.5)
+mtext('Thraupidae', cex = 2, side = 3, outer = TRUE, line = 2)
 
 ######## phylomorphospace plots 
-## todiramphus
-todi.data <- subset(todi, select = c('keel.resid', 'spp.rich', 'tarso.resid'))
-todi.data$spp.rich <- log10(todi.data$spp.rich)
-todi.data <- todi.data[match(todi.tree$tip.label, rownames(todi.data)),]
-colnames(todi.data) <- c('keel length', 'log species richness', 'tarsometatarsus')
-todi.mat <- as.matrix(todi.data)
-fancyTree(todi.tree, type='scattergram', X = todi.mat, label='off', colors=c('white', 'black'))
+## kingfishers
+king.data <- subset(king, select = c('keel.resid', 'spp.rich', 'tarso.resid'))
+king.data$spp.rich <- log10(king.data$spp.rich)
+king.data <- king.data[match(king.tree$tip.label, rownames(king.data)),]
+colnames(king.data) <- c('keel length', 'log species richness', 'tarsometatarsus')
+king.mat <- as.matrix(king.data)
+fancyTree(king.tree, type='scattergram', X = king.mat, label = 'off')
 
+## doves
 doves.data <- subset(doves, select = c('keel.resid', 'spp.rich', 'tarso.resid'))
 doves.data$spp.rich <- log10(doves.data$spp.rich)
 doves.data <- doves.data[match(doves.tree$tip.label, rownames(doves.data)),]
 colnames(doves.data) <- c('keel length', 'log species richness', 'tarsometatarsus')
 doves.mat <- as.matrix(doves.data)
 fancyTree(doves.tree, type='scattergram', X = doves.mat, label='off')
+
+## tanagers
+thraup.data <- subset(thraup, select = c('keel.resid', 'spp.rich', 'tarso.resid'))
+thraup.data$spp.rich <- log10(thraup.data$spp.rich)
+thraup.data <- thraup.data[match(thraup.tree$tip.label, rownames(thraup.data)),]
+colnames(thraup.data) <- c('keel length', 'log species richness', 'tarsometatarsus')
+thraup.mat <- as.matrix(thraup.data)
+fancyTree(thraup.tree, type='scattergram', X = thraup.mat, label = 'off')
