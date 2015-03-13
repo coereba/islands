@@ -584,6 +584,107 @@ mtext('log species richness', cex = 2, side = 3, outer = TRUE, adj = 1, padj = 0
 mtext('air-ground index', cex = 2, side = 3, outer = TRUE, adj = 0, padj = 0.5)
 mtext('Thraupidae', cex = 2, side = 3, outer = TRUE, line = 2)
 
+## Rhipiduridae
+rhip.tree <- drop.tip(tree, subset(tree$tip.label, !(tree$tip.label %in% rhip$spp.island)))
+rhipshape <- rhip$shape
+names(rhipshape) <- rhip$spp.island
+rhipshape <- rhipshape[rhip.tree$tip.label]
+rhip.obj <- contMap(rhip.tree, rhipshape, plot=FALSE)
+rhiprich <- log10(rhip$spp.rich)
+names(rhiprich) <- rhip$spp.island
+rhiprich <- rhiprich[rhip.tree$tip.label]
+rhiprich.obj <- contMap(rhip.tree, rhiprich, plot=FALSE)
+layout(matrix(1:2, 1, 2), width = c(1,1))
+par(mar = c(0,0,0,0), oma = c(0.3, 0.3, 5, 0.3))
+plot(setMap(rhip.obj, colors=c('white', 'black')),
+     ftype = 'off', lwd = 7, legend = FALSE)
+plot(setMap(rhiprich.obj, colors = c('white', 'black')),
+     direction = 'leftwards', ftype = 'off', lwd = 7, legend = FALSE)
+mtext('log species richness', cex = 2, side = 3, outer = TRUE, adj = 1, padj = 0.5)
+mtext('air-ground index', cex = 2, side = 3, outer = TRUE, adj = 0, padj = 0.5)
+mtext('Rhipiduridae', cex = 2, side = 3, outer = TRUE, line = 2)
+
+## Zosteropidae
+zost.tree <- drop.tip(tree, subset(tree$tip.label, !(tree$tip.label %in% zost$spp.island)))
+zostshape <- zost$shape
+names(zostshape) <- zost$spp.island
+zostshape <- zostshape[zost.tree$tip.label]
+zost.obj <- contMap(zost.tree, zostshape, plot=FALSE)
+zostrich <- log10(zost$spp.rich)
+names(zostrich) <- zost$spp.island
+zostrich <- zostrich[zost.tree$tip.label]
+zostrich.obj <- contMap(zost.tree, zostrich, plot=FALSE)
+layout(matrix(1:2, 1, 2), width = c(1,1))
+par(mar = c(0,0,0,0), oma = c(0.3, 0.3, 5, 0.3))
+plot(setMap(zost.obj, colors=c('white', 'black')),
+     ftype = 'off', lwd = 7, legend = FALSE)
+plot(setMap(zostrich.obj, colors = c('white', 'black')),
+     direction = 'leftwards', ftype = 'off', lwd = 7, legend = FALSE)
+mtext('log species richness', cex = 2, side = 3, outer = TRUE, adj = 1, padj = 0.5)
+mtext('air-ground index', cex = 2, side = 3, outer = TRUE, adj = 0, padj = 0.5)
+mtext('Zosteropidae', cex = 2, side = 3, outer = TRUE, line = 2)
+
+## Meliphagidae
+mel.tree <- drop.tip(tree, subset(tree$tip.label, !(tree$tip.label %in% mel$spp.island)))
+melshape <- mel$shape
+names(melshape) <- mel$spp.island
+melshape <- melshape[mel.tree$tip.label]
+mel.obj <- contMap(mel.tree, melshape, plot=FALSE)
+melrich <- log10(mel$spp.rich)
+names(melrich) <- mel$spp.island
+melrich <- melrich[mel.tree$tip.label]
+melrich.obj <- contMap(mel.tree, melrich, plot=FALSE)
+layout(matrix(1:2, 1, 2), width = c(1,1))
+par(mar = c(0,0,0,0), oma = c(0.3, 0.3, 5, 0.3))
+plot(setMap(mel.obj, colors=c('white', 'black')),
+     ftype = 'off', lwd = 7, legend = FALSE)
+plot(setMap(melrich.obj, colors = c('white', 'black')),
+     direction = 'leftwards', ftype = 'off', lwd = 7, legend = FALSE)
+mtext('log species richness', cex = 2, side = 3, outer = TRUE, adj = 1, padj = 0.5)
+mtext('air-ground index', cex = 2, side = 3, outer = TRUE, adj = 0, padj = 0.5)
+mtext('Meliphagidae', cex = 2, side = 3, outer = TRUE, line = 2)
+
+## Monarchidae
+mon.tree <- drop.tip(tree, subset(tree$tip.label, !(tree$tip.label %in% mon$spp.island)))
+monshape <- mon$shape
+names(monshape) <- mon$spp.island
+monshape <- monshape[mon.tree$tip.label]
+mon.obj <- contMap(mon.tree, monshape, plot=FALSE)
+monrich <- log10(mon$spp.rich)
+names(monrich) <- mon$spp.island
+monrich <- monrich[mon.tree$tip.label]
+monrich.obj <- contMap(mon.tree, monrich, plot=FALSE)
+layout(matrix(1:2, 1, 2), width = c(1,1))
+par(mar = c(0,0,0,0), oma = c(0.3, 0.3, 5, 0.3))
+plot(setMap(mon.obj, colors=c('white', 'black')),
+     ftype = 'off', lwd = 7, legend = FALSE)
+plot(setMap(monrich.obj, colors = c('white', 'black')),
+     direction = 'leftwards', ftype = 'off', lwd = 7, legend = FALSE)
+mtext('log species richness', cex = 2, side = 3, outer = TRUE, adj = 1, padj = 0.5)
+mtext('air-ground index', cex = 2, side = 3, outer = TRUE, adj = 0, padj = 0.5)
+mtext('Monarchidae', cex = 2, side = 3, outer = TRUE, line = 2)
+
+## Pachycephala
+pach.tree <- drop.tip(tree, subset(tree$tip.label, !(tree$tip.label %in% pach$spp.island)))
+pachshape <- pach$shape
+names(pachshape) <- pach$spp.island
+pachshape <- pachshape[pach.tree$tip.label]
+pach.obj <- contMap(pach.tree, pachshape, plot=FALSE)
+pachrich <- log10(pach$spp.rich)
+names(pachrich) <- pach$spp.island
+pachrich <- pachrich[pach.tree$tip.label]
+pachrich.obj <- contMap(pach.tree, pachrich, plot=FALSE)
+layout(matrix(1:2, 1, 2), width = c(1,1))
+par(mar = c(0,0,0,0), oma = c(0.3, 0.3, 5, 0.3))
+plot(setMap(pach.obj, colors=c('white', 'black')),
+     ftype = 'off', lwd = 7, legend = FALSE)
+plot(setMap(pachrich.obj, colors = c('white', 'black')),
+     direction = 'leftwards', ftype = 'off', lwd = 7, legend = FALSE)
+mtext('log species richness', cex = 2, side = 3, outer = TRUE, adj = 1, padj = 0.5)
+mtext('air-ground index', cex = 2, side = 3, outer = TRUE, adj = 0, padj = 0.5)
+mtext('Pachycephalidae', cex = 2, side = 3, outer = TRUE, line = 2)
+
+
 ######## phylomorphospace plots 
 ## kingfishers
 king.data <- subset(king, select = c('keel.resid', 'spp.rich', 'tarso.resid'))
@@ -608,3 +709,45 @@ thraup.data <- thraup.data[match(thraup.tree$tip.label, rownames(thraup.data)),]
 colnames(thraup.data) <- c('keel length', 'log species richness', 'tarsometatarsus')
 thraup.mat <- as.matrix(thraup.data)
 fancyTree(thraup.tree, type='scattergram', X = thraup.mat, label = 'off')
+
+## Rhipiduridae
+rhip.data <- subset(rhip, select = c('keel.resid', 'spp.rich', 'tarso.resid'))
+rhip.data$spp.rich <- log10(rhip.data$spp.rich)
+rhip.data <- rhip.data[match(rhip.tree$tip.label, rownames(rhip.data)),]
+colnames(rhip.data) <- c('keel length', 'log species richness', 'tarsometatarsus')
+rhip.mat <- as.matrix(rhip.data)
+fancyTree(rhip.tree, type='scattergram', X = rhip.mat, label = 'off')
+
+## Zosteropidae
+zost.data <- subset(zost, select = c('keel.resid', 'spp.rich', 'tarso.resid'))
+zost.data$spp.rich <- log10(zost.data$spp.rich)
+zost.data <- zost.data[match(zost.tree$tip.label, rownames(zost.data)),]
+colnames(zost.data) <- c('keel length', 'log species richness', 'tarsometatarsus')
+zost.mat <- as.matrix(zost.data)
+fancyTree(zost.tree, type = 'scattergram', X = zost.mat, label = 'off')
+
+## Meliphagidae
+mel.data <- subset(mel, select = c('keel.resid', 'spp.rich', 'tarso.resid'))
+mel.data$spp.rich <- log10(mel.data$spp.rich)
+mel.data <- mel.data[match(mel.tree$tip.label, rownames(mel.data)),]
+colnames(mel.data) <- c('keel length', 'log species richness', 'tarsometatarsus')
+mel.mat <- as.matrix(mel.data)
+fancyTree(mel.tree, type = 'scattergram', X = mel.mat, label = 'off')
+
+## Monarchidae
+mon.data <- subset(mon, select = c('keel.resid', 'spp.rich', 'tarso.resid'))
+mon.data$spp.rich <- log10(mon.data$spp.rich)
+mon.data <- mon.data[match(mon.tree$tip.label, rownames(mon.data)),]
+colnames(mon.data) <- c('keel length', 'log species richness', 'tarsometatarsus')
+mon.mat <- as.matrix(mon.data)
+fancyTree(mon.tree, type = 'scattergram', X = mon.mat, label = 'off')
+# branches are strangely very very short in monarchidae scattergram phylo trees
+# look into what's going on here!
+
+## Pachycephalidae
+pach.data <- subset(pach, select = c('keel.resid', 'spp.rich', 'tarso.resid'))
+pach.data$spp.rich <- log10(pach.data$spp.rich)
+pach.data <- pach.data[match(pach.tree$tip.label, rownames(pach.data)),]
+colnames(pach.data) <- c('keel length', 'log species richness', 'tarsometatarsus')
+pach.mat <- as.matrix(pach.data)
+fancyTree(pach.tree, type='scattergram', X = pach.mat, label = 'off')
