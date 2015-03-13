@@ -684,6 +684,26 @@ mtext('log species richness', cex = 2, side = 3, outer = TRUE, adj = 1, padj = 0
 mtext('air-ground index', cex = 2, side = 3, outer = TRUE, adj = 0, padj = 0.5)
 mtext('Pachycephalidae', cex = 2, side = 3, outer = TRUE, line = 2)
 
+## hummingbirds
+hum.tree <- drop.tip(tree, subset(tree$tip.label, !(tree$tip.label %in% hum$spp.island)))
+humshape <- hum$shape
+names(humshape) <- hum$spp.island
+humshape <- humshape[hum.tree$tip.label]
+hum.obj <- contMap(hum.tree, humshape, plot=FALSE)
+humrich <- log10(hum$spp.rich)
+names(humrich) <- hum$spp.island
+humrich <- humrich[hum.tree$tip.label]
+humrich.obj <- contMap(hum.tree, humrich, plot=FALSE)
+layout(matrix(1:2, 1, 2), width = c(1,1))
+par(mar = c(0,0,0,0), oma = c(0.3, 0.3, 5, 0.3))
+plot(setMap(hum.obj, colors=c('white', 'black')),
+     ftype = 'off', lwd = 7, legend = FALSE)
+plot(setMap(humrich.obj, colors = c('white', 'black')),
+     direction = 'leftwards', ftype = 'off', lwd = 7, legend = FALSE)
+mtext('log species richness', cex = 2, side = 3, outer = TRUE, adj = 1, padj = 0.5)
+mtext('air-ground index', cex = 2, side = 3, outer = TRUE, adj = 0, padj = 0.5)
+mtext('Trochilidae', cex = 2, side = 3, outer = TRUE, line = 2)
+
 
 ######## phylomorphospace plots 
 ## kingfishers
@@ -751,3 +771,11 @@ pach.data <- pach.data[match(pach.tree$tip.label, rownames(pach.data)),]
 colnames(pach.data) <- c('keel length', 'log species richness', 'tarsometatarsus')
 pach.mat <- as.matrix(pach.data)
 fancyTree(pach.tree, type='scattergram', X = pach.mat, label = 'off')
+
+## Hummingbirds
+hum.data <- subset(hum, select = c('keel.resid', 'spp.rich', 'tarso.resid'))
+hum.data$spp.rich <- log10(hum.data$spp.rich)
+hum.data <- hum.data[match(hum.tree$tip.label, rownames(hum.data)),]
+colnames(hum.data) <- c('keel length', 'log species richness', 'tarsometatarsus')
+hum.mat <- as.matrix(hum.data)
+fancyTree(hum.tree, type='scattergram', X = hum.mat, label = 'off')
