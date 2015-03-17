@@ -115,28 +115,52 @@ subset(tr$tip.label, !(tr$tip.label %in% df$spp.island))
 tree <- drop.tip(tr, subset(tr$tip.label, !(tr$tip.label %in% df$spp.island)))
 
 ## PGLS
-# create Brownian motion model correlation matrix from tree
+# create correlation matrices 
 bm <- corBrownian(phy = tree)
+ou <- corMartins(1, phy = tree)
+pa <- corPagel(1, phy = tree)
+# determining which correlation structure best fits the data
+# keel length
+f <- function(cs) gls(keel.resid ~ 1, data = df, correlation = cs)
+fit <- lapply(list(NULL, bm, ou, pa), f)
+sapply(fit, AIC) #Pagel's correlation structure is best fit for keel data
+fit[[4]]$modelStruct # Pagel's lambda for keel = 0.95
+# tarso length
+fun.tarso <- function(cs) gls(tarso.resid ~ 1, data = df, correlation = cs)
+fit.tarso <- lapply(list(NULL, bm, ou, pa), fun.tarso)
+sapply(fit.tarso, AIC) # Pagel's correlation structure is best fit for tarso data
+fit.tarso[[4]]$modelStruct # Pagel's lambda for tarso = 0.98
+# PC1 (body size)
+fun.pc1 <- function(cs) gls(pc1 ~ 1, data = df, correlation = cs)
+fit.pc1 <- lapply(list(NULL, bm, ou, pa), fun.pc1)
+sapply(fit.pc1, AIC) # Pagel's correlation structure is best fit for pc1
+fit.pc1[[4]]$modelStruct # Pagel's lambda for pc1 = 0.98
+# shape
+fun.shape <- function(cs) gls(shape ~ 1, data = df, correlation = cs)
+fit.shape <- lapply(list(NULL, bm, ou, pa), fun.shape)
+sapply(fit.shape, AIC) # Pagel's corelation structure is best fit for shape index
+fit.shape[[4]]$modelStruct #Pagel's lambda for shape index = 0.97
+
 # PGLS models
-m1 <- gls(keel.resid ~ log10(spp.rich), data = df, correlation = bm) 
+m1 <- gls(keel.resid ~ log10(spp.rich), data = df, correlation = pa) 
 summary(m1)
-m0 <- gls(keel.resid ~ 1, data = df, correlation = bm)
+m0 <- gls(keel.resid ~ 1, data = df, correlation = pa)
 1 - (m1$sigma/m0$sigma)^2 # R^2 value for keel ~ spp.rich after correcting for phylogeny
-m2 <- gls(keel.resid ~ log10(area), data = df, correlation = bm)
-m3 <- gls(tarso.resid ~ log10(spp.rich), data = df, correlation = bm)
-mt <- gls(tarso.resid ~ 1, data = df, correlation = bm)
+m2 <- gls(keel.resid ~ log10(area), data = df, correlation = pa)
+m3 <- gls(tarso.resid ~ log10(spp.rich), data = df, correlation = pa)
+mt <- gls(tarso.resid ~ 1, data = df, correlation = pa)
 1 - (m3$sigma/mt$sigma)^2 # R^2 for tarso ~ spp.rich after correcting for phylogeny
-m4 <- gls(pc1 ~ log10(spp.rich), data = df, correlation = bm)
-mpc <- gls(pc1 ~ 1, data = df, correlation = bm)
+m4 <- gls(pc1 ~ log10(spp.rich), data = df, correlation = pa)
+mpc <- gls(pc1 ~ 1, data = df, correlation = pa)
 1 - (m4$sigma/mpc$sigma)^2 # R^2 for pc1 ~ spp.rich after correcting for phylogeny
-m5 <- gls(tarso.resid ~ log10(area), data = df, correlation = bm)
-m6 <- gls(shape ~ log10(spp.rich), data = df, correlation = bm)
-m7 <- gls(shape ~ log10(area), data = df, correlation = bm)
-ms <- gls(shape ~ 1, data = df, correlation = bm)
+m5 <- gls(tarso.resid ~ log10(area), data = df, correlation = pa)
+m6 <- gls(shape ~ log10(spp.rich), data = df, correlation = pa)
+m7 <- gls(shape ~ log10(area), data = df, correlation = pa)
+ms <- gls(shape ~ 1, data = df, correlation = pa)
 1 - (m6$sigma/ms$sigma)^2 # R^2 for shape ~ spp.rich after correcting for phylogeny
-m8 <- gls(keel.resid ~ tarso.resid, data = df, correlation = bm)
+m8 <- gls(keel.resid ~ tarso.resid, data = df, correlation = pa)
 1 - (m8$sigma/m0$sigma)^2 # R^2 for keel ~ tarso after correcting for phylogeny
-m9 <- gls(pc1 ~ log10(area), data = df, correlation = bm)
+m9 <- gls(pc1 ~ log10(area), data = df, correlation = pa)
 
 #PIC
 # need to order the populations in the dataframe to match the order of populations in the tree
