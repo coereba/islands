@@ -147,32 +147,45 @@ summary(df)
 
 summary(lm(flight.body ~ family, data = df))
 
-bm <- corBrownian(phy = tree)
-m1 <- gls(flight.body ~ small.island.restricted, data = df, correlation = bm)
-summary(m1)
-
 # look at just the landbirds
 landbird.df <- subset(df, order != 'charadriiformes' & order != 'ciconiiformes' & order != 'pelecaniformes' & order != 'phaethontiformes'
                       & order != 'podicipediformes' & order != 'procellariiformes' & order != 'suliformes' 
                       & order != 'anseriformes')
 not.landbirds <- subset(tree$tip.label, !(tree$tip.label %in% landbird.df$species))
 landbird.tree <- drop.tip(tree, not.landbirds)
+# test which model of evolution gives best fit
 landbird.bm <- corBrownian(phy = landbird.tree)
-landbird1 <- gls(flight.body ~ small.island.restricted, data = landbird.df, correlation = landbird.bm)
+landbird.ou <- corMartins(1, phy = landbird.tree)
+landbird.pa <- corPagel(1, phy = landbird.tree)
+f <- function(cs) gls(flight.body ~ 1, data = landbird.df, correlation = cs)
+landbird.fit <- lapply(list(NULL, landbird.bm, landbird.pa, landbird.ou), f)
+sapply(landbird.fit, AIC) # Pagel's lambda correlation structure fits flight muscle data best
+landbird.fit[[3]]$modelStruct # gives Pagels lambda for flight muscles
+# run phylo gls with best fit correlation structure
+landbird1 <- gls(flight.body ~ small.island.restricted, data = landbird.df, correlation = landbird.pa)
 summary(landbird1)
-landbird2 <- gls(flight.body ~ island.restricted, data = landbird.df, correlation = landbird.bm)
-summary(landbird2)
-landbird.null <- gls(flight.body ~ 1, data = landbird.df, correlation = landbird.bm)
+landbird.null <- gls(flight.body ~ 1, data = landbird.df, correlation = landbird.pa)
 summary(landbird.null)
 
 #look at just the columbids
 columb <- subset(df, order == 'columbiformes')
 columb.tree <- drop.tip(tree, subset(tree$tip.label, !(tree$tip.label %in% columb$species)))
 columb.bm <- corBrownian(phy = columb.tree)
-col1 <- gls(flight.body ~ small.island.restricted, data = columb, correlation = columb.bm)
+columb.ou <- corMartins(1, phy = columb.tree)
+columb.pa <- corPagel(1, phy = columb.tree)
+fun.columb <- function(cs) gls(flight.body ~ 1, data = columb, correlation = cs)
+columb.fit <- lapply(list(NULL, columb.bm, columb.pa, columb.ou), fun.columb)
+sapply(columb.fit, AIC) #null model is best fit, with Pagel's very close
+columb.fit[[3]]$modelStruct #Pagel's lambda 
+col1 <- gls(flight.body ~ small.island.restricted, data = columb, correlation = columb.pa)
 summary(col1)
-col2 <- gls(flight.body ~ island.restricted, data = columb, correlation = columb.bm)
-summary(col2)
+col.null <- gls(flight.body ~ 1, data = columb, correlation = columb.pa)
+summary(col.null)
+col <- gls(flight.body ~ small.island.restricted, data = columb, correlation = NULL)
+summary(col)
+summary(lm(flight.body ~ small.island.restricted, data = columb))
+#R-squared for columbid model
+1 - (col1$sigma/col.null$sigma)^2
 ## figure of columbid results
 par(mar = c(4,6,1,1))
 boxplot(flight.body ~ small.island.restricted, data = columb, cex.axis = 2, col = 'gray',
@@ -186,23 +199,6 @@ pass.bm <- corBrownian(phy = pass.tree)
 pas1 <- gls(flight.body ~ oceanic.island.restricted, data = pass, correlation = pass.bm)
 summary(pas1)
 
-### restrict analysis to families that include both continental and island species
-# first, create list of families that have island species
-island.df <- subset(df, island.restricted == 'yes')
-summary(island.df)
-island.df <- droplevels(island.df)
-summary(island.df$order)
-island.families <- as.data.frame(table(island.df$family))$Var1
-restrict.df <- subset(df, family %in% island.families)
-restrict.tr <- drop.tip(tree, subset(tree$tip.label, !(tree$tip.label %in% restrict.df$species)))
-restrict.bm <- corBrownian(phy = restrict.tr)
-model1 <- gls(flight.body ~ oceanic.island.restricted, data = restrict.df, correlation = restrict.bm)
-summary(model1)
-null.model <- gls(flight.body ~ 1, data = restrict.df, correlation = restrict.bm)
-summary(null.model)
-
-summary(restrict.df)
-str(restrict.df)
 
 ###################
 ## link between keel length and flight muscle mass
