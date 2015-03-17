@@ -193,13 +193,6 @@ boxplot(flight.body ~ small.island.restricted, data = columb, cex.axis = 2, col 
         names = c('continental', 'restricted to islands'))
 boxplot(flight.body ~ island.restricted, data = columb, correlation = columb.bm)
 
-pass <- subset(df, order == 'passeriformes')
-pass.tree <- drop.tip(trees[[1]], subset(trees[[1]]$tip.label, !(trees[[1]]$tip.label %in% pass$species)))
-pass.bm <- corBrownian(phy = pass.tree)
-pas1 <- gls(flight.body ~ oceanic.island.restricted, data = pass, correlation = pass.bm)
-summary(pas1)
-
-
 ###################
 ## link between keel length and flight muscle mass
 skel.data <- read.csv('skeletal_data.csv', header = T)
@@ -337,8 +330,14 @@ summary(lm(keel.resid ~ flight.body, data = skel.muscle.ave))
 # PGLS on skeletal & flight muscle species averages
 not.combined <- subset(tree$tip.label, !(tree$tip.label %in% skel.muscle.ave$species))
 combined.tree <- drop.tip(tree, not.combined)
-combined.bm <- corBrownian(phy = combined.tree)
 rownames(skel.muscle.ave) <- skel.muscle.ave$species
+combined.bm <- corBrownian(phy = combined.tree)
+combined.pa <- corPagel(1, phy = combined.tree)
+fun.combined <- function(cs) gls(keel.resid ~ 1, data = skel.muscle.ave, correlation = cs)
+combined.fit <- lapply(list(NULL, combined.bm, combined.pa), fun.combined)
+sapply(combined.fit, AIC) # Pagel's lambda correlation structure fits flight muscle data best
+combined.fit[[3]]$modelStruct # gives Pagels lambda for flight muscles
+
 combined1 <- gls(keel.resid ~ flight.body, data = skel.muscle.ave, correlation = combined.bm)
 summary(combined1)
 combined.null <- gls(keel.resid ~ 1, data = skel.muscle.ave, correlation = combined.bm)
