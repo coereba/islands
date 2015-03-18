@@ -498,23 +498,23 @@ plot(shape ~ log10(spp.rich), data = doves, pch = 21, bg = 'gray', cex = 2,
 segments(x0 = log10(doves$spp.rich), y0 = doves$shape-doves$sd.shape, y1 = doves$shape+doves$sd.shape)
 #text(x = 1.2, y = 1.4, labels = 'Columbidae', cex = 2)
 plot(shape ~ log10(spp.rich), pch = 21, bg = 'gray', data = todi, cex = 2, 
-     main = 'Todiramphus', cex.main = 2, font.main = 3)
+     main = 'Todiramphus', cex.main = 2, font.main = 3, ylim = c(0.1, 1.01))
 segments(x0 = log10(todi$spp.rich), y0 = (todi$shape-todi$sd.shape), y1 = (todi$shape+todi$sd.shape))
 #text( x= 2, y = 0.15, labels = 'Todiramphus', cex = 2, font = 3)
 plot(shape ~ log10(spp.rich), data = coereba, pch = 21, bg = 'gray', cex = 2,
-     main = 'Coereba flaveola', cex.main = 2, font.main = 3)
+     main = 'Coereba flaveola', cex.main = 2, font.main = 3, ylim = c(-0.7, 0.05))
 segments(x0 = log10(coereba$spp.rich), y0 = coereba$shape-coereba$sd.shape, y1 = coereba$shape+coereba$sd.shape)
 #text( x= 2.05, y = -0.07, labels = 'Coereba flaveola', cex = 2, font = 3)
 plot(shape ~ log10(spp.rich), data = tiaris, pch = 21, bg = 'gray', cex = 2,
-     main = 'Tiaris', cex.main = 2, font.main = 3)
+     main = 'Tiaris', cex.main = 2, font.main = 3, ylim = c(-0.23, 0.18))
 segments(x0 = log10(tiaris$spp.rich), y0 = tiaris$shape-tiaris$sd.shape, y1 = tiaris$shape+tiaris$sd.shape)
 #text(x = 2.1, y = 0.11, labels = 'Tiaris', cex = 2, font = 3)
 plot(shape ~ log10(spp.rich), data = pach, pch = 21, bg = 'gray', cex = 2,
-     main = 'Pachycephala', cex.main = 2, font.main = 3)
+     main = 'Pachycephala', cex.main = 2, font.main = 3, ylim = c(-1.4, -0.15))
 segments(x0 = log10(pach$spp.rich), y0 = pach$shape-pach$sd.shape, y1 = pach$shape+pach$sd.shape)
 #text(x = 1.85, y = -0.45, labels = 'Pachycephala', cex = 2, font = 3)
 plot(shape ~ log10(spp.rich), data = mon, pch = 21, bg = 'gray', cex = 2,
-     main = 'Monarchidae', cex.main = 2, font.main = 1)
+     main = 'Monarchidae', cex.main = 2, font.main = 1, ylim = c(-1, 0.21))
 segments(x0 = log10(mon$spp.rich), y0 = mon$shape-mon$sd.shape, y1 = mon$shape+mon$sd.shape)
 #text(x = 1.75, y = 0.12, labels = 'Monarchidae', cex = 2)
 mtext('log species richness', cex = 2, side = 1, outer = TRUE, padj = 1)
