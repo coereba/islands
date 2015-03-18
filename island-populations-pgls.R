@@ -147,6 +147,7 @@ summary(m1)
 m0 <- gls(keel.resid ~ 1, data = df, correlation = pa)
 1 - (m1$sigma/m0$sigma)^2 # R^2 value for keel ~ spp.rich after correcting for phylogeny
 m2 <- gls(keel.resid ~ log10(area), data = df, correlation = pa)
+1 - (m2$sigma/m0$sigma)^2 #R^2 for keel ~ area after correcting for phylogeny
 m3 <- gls(tarso.resid ~ log10(spp.rich), data = df, correlation = pa)
 mt <- gls(tarso.resid ~ 1, data = df, correlation = pa)
 1 - (m3$sigma/mt$sigma)^2 # R^2 for tarso ~ spp.rich after correcting for phylogeny
@@ -154,13 +155,16 @@ m4 <- gls(pc1 ~ log10(spp.rich), data = df, correlation = pa)
 mpc <- gls(pc1 ~ 1, data = df, correlation = pa)
 1 - (m4$sigma/mpc$sigma)^2 # R^2 for pc1 ~ spp.rich after correcting for phylogeny
 m5 <- gls(tarso.resid ~ log10(area), data = df, correlation = pa)
+1 - (m5$sigma/mt$sigma)^2 #R^2 for tarso ~ area
 m6 <- gls(shape ~ log10(spp.rich), data = df, correlation = pa)
 m7 <- gls(shape ~ log10(area), data = df, correlation = pa)
 ms <- gls(shape ~ 1, data = df, correlation = pa)
 1 - (m6$sigma/ms$sigma)^2 # R^2 for shape ~ spp.rich after correcting for phylogeny
+1 - (m7$sigma/ms$sigma)^2 #R^2 for shape ~ area
 m8 <- gls(keel.resid ~ tarso.resid, data = df, correlation = pa)
 1 - (m8$sigma/m0$sigma)^2 # R^2 for keel ~ tarso after correcting for phylogeny
 m9 <- gls(pc1 ~ log10(area), data = df, correlation = pa)
+1 - (m9$sigma/mpc$sigma)^2 #R^2 for pc1 ~ area
 
 #PIC
 # need to order the populations in the dataframe to match the order of populations in the tree
