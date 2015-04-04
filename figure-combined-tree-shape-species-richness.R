@@ -25,6 +25,17 @@ dovesrich <- log10(doves$spp.rich)
 names(dovesrich) <- doves$spp.island
 dovesrich <- dovesrich[doves.tree$tip.label]
 doves.rich.obj <- contMap(doves.tree, dovesrich, plot=FALSE)
+## hummingbirds 
+hum.df <- subset(df, family == 'Trochilidae')
+hum.tree <- drop.tip(tree, subset(tree$tip.label, !(tree$tip.label %in% hum$spp.island)))
+humshape <- hum$shape
+names(humshape) <- hum$spp.island
+humshape <- humshape[hum.tree$tip.label]
+hum.obj <- contMap(hum.tree, humshape, plot=FALSE)
+humrich <- log10(hum$spp.rich)
+names(humrich) <- hum$spp.island
+humrich <- humrich[hum.tree$tip.label]
+hum.rich.obj <- contMap(hum.tree, humrich, plot=FALSE)
 ## tanagers
 thraup <- subset(df, family == 'Thraupidae')
 thraup.tree <- drop.tip(tree, subset(tree$tip.label, !(tree$tip.label %in% thraup$spp.island)))
@@ -88,7 +99,7 @@ names(pachrich) <- pach$spp.island
 pachrich <- pachrich[pach.tree$tip.label]
 pachrich.obj <- contMap(pach.tree, pachrich, plot=FALSE)
 
-layout(matrix(1:16, 2, 8, byrow=TRUE))
+layout(matrix(1:18, 3, 6, byrow=TRUE))
 par(mar = c(8,0,5,0), oma = c(1.5, 0.3, 1, 0.3))
 
 plot(setMap(king.obj, colors=c('white', 'black')), 
@@ -107,43 +118,47 @@ plot(setMap(doves.rich.obj, colors=c('white', 'black')),
      direction = 'leftwards', ftype = 'off', lwd = 7, legend=FALSE)
 mtext('species richness', side = 3, outer = FALSE, adj = 0.5, padj = 1, cex = 1.3)
 
+plot(setMap(hum.obj, colors=c('white', 'black')),
+     ftype = 'off', lwd = 7, legend=FALSE)
+mtext('air-ground index', side = 3, outer = FALSE, adj = 0.5, padj = 1, cex = 1.3)
+mtext('C. Trochilidae', cex = 2, side = 1, outer = FALSE, adj = 0, padj = 0)
+plot(setMap(hum.rich.obj, colors=c('white', 'black')),
+     direction = 'leftwards', ftype = 'off', lwd = 7, legend=FALSE)
+mtext('species richness', side = 3, outer = FALSE, adj = 0.5, padj = 1, cex = 1.3)
+
 plot(setMap(thraup.obj, colors=c('white', 'black')),
      ftype = 'off', lwd = 7, legend = FALSE)
-mtext('air-ground index', side = 3, outer = FALSE, adj = 0.5, padj = 1, cex = 1.3)
-mtext('C. Thraupidae', cex = 2, side = 1, outer = FALSE, adj = 0, padj = 0)
+mtext('D. Thraupidae', cex = 2, side = 1, outer = FALSE, adj = 0, padj = 0)
 plot(setMap(thrauprich.obj, colors = c('white', 'black')),
      direction = 'leftwards', ftype = 'off', lwd = 7, legend = FALSE)
-mtext('species richness', side = 3, outer = FALSE, adj = 0.5, padj = 1, cex = 1.3)
 
 plot(setMap(rhip.obj, colors=c('white', 'black')),
      ftype = 'off', lwd = 7, legend = FALSE)
-mtext('air-ground index', side = 3, outer = FALSE, adj = 0.5, padj = 1, cex = 1.3)
-mtext('D. Rhipiduridae', cex = 2, side = 1, outer = FALSE, adj = 0, padj = 0)
+mtext('E. Rhipiduridae', cex = 2, side = 1, outer = FALSE, adj = 0, padj = 0)
 plot(setMap(rhiprich.obj, colors = c('white', 'black')),
      direction = 'leftwards', ftype = 'off', lwd = 7, legend = FALSE)
-mtext('species richness', side = 3, outer = FALSE, adj = 0.5, padj = 1, cex = 1.3)
 
 plot(setMap(zost.obj, colors=c('white', 'black')),
      ftype = 'off', lwd = 7, legend = FALSE)
-mtext('E. Zosteropidae', cex = 2, side = 1, outer = FALSE, adj = 0, padj = 0)
+mtext('F. Zosteropidae', cex = 2, side = 1, outer = FALSE, adj = 0, padj = 0)
 plot(setMap(zostrich.obj, colors = c('white', 'black')),
      direction = 'leftwards', ftype = 'off', lwd = 7, legend = FALSE)
 
 plot(setMap(mel.obj, colors=c('white', 'black')),
      ftype = 'off', lwd = 7, legend = FALSE)
-mtext('F. Meliphagidae', cex = 2, side = 1, outer = FALSE, adj = 0, padj = 0)
+mtext('G. Meliphagidae', cex = 2, side = 1, outer = FALSE, adj = 0, padj = 0)
 plot(setMap(melrich.obj, colors = c('white', 'black')),
      direction = 'leftwards', ftype = 'off', lwd = 7, legend = FALSE)
 
 plot(setMap(mon.obj, colors=c('white', 'black')),
      ftype = 'off', lwd = 7, legend = FALSE)
-mtext('G. Monarchidae', cex = 2, side = 1, outer = FALSE, adj = 0, padj = 0)
+mtext('H. Monarchidae', cex = 2, side = 1, outer = FALSE, adj = 0, padj = 0)
 plot(setMap(monrich.obj, colors = c('white', 'black')),
      direction = 'leftwards', ftype = 'off', lwd = 7, legend = FALSE)
 
 plot(setMap(pach.obj, colors=c('white', 'black')),
      ftype = 'off', lwd = 7, legend = FALSE)
-mtext('H. Pachycephalidae', cex = 2, side = 1, outer = FALSE, adj = 0, padj = 0)
+mtext('I. Pachycephalidae', cex = 2, side = 1, outer = FALSE, adj = 0, padj = 0)
 plot(setMap(pachrich.obj, colors = c('white', 'black')),
      direction = 'leftwards', ftype = 'off', lwd = 7, legend = FALSE)
 
