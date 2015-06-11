@@ -180,6 +180,7 @@ summary(lm(pic.tarso.resid ~ pic.spp.rich - 1))
 par(mar = c(5,5,1,1))
 plot(pic.keel.resid ~ pic.spp.rich)
 plot(pic.shape ~ pic.spp.rich)
+abline(lm(pic.shape ~ pic.spp.rich - 1))
 plot(pic.tarso.resid ~ pic.spp.rich)
 
 # non phylo analyses of population averages
@@ -222,6 +223,7 @@ summary(lm(shape ~ log10(spp.rich), data = doves))
 summary(lm(keel.resid ~ log10(spp.rich), data = doves))
 summary(lm(tarso.resid ~ log10(spp.rich), data = doves))
 plot(shape ~ log10(spp.rich), data = doves)
+summary(lm(pc1 ~ log10(spp.rich), data=doves))
 
 # Ptilinopus
 ptil <- subset(df, genus == 'Ptilinopus')
@@ -495,35 +497,377 @@ summary(lm(log10(spp.rich) ~ log10(area) + nearest.cont, data = islands.df))
 
 ##############################
 #### FIGURES ####
-par(mfcol = c(2, 3))
-par(mar = c(2,2.5,2.5,0), oma = c(4, 6, 0.5, 0.3))
-plot(shape ~ log10(spp.rich), data = doves, pch = 21, bg = 'gray', cex = 2, 
-     main = 'Columbidae', cex.main = 2, font.main = 1)
+
+#### Keel by tarsometatarsus across all populations
+df$bg <- ifelse(df$family=='Columbidae', 'darkcyan', 'darkgoldenrod1')
+df$bg <- ifelse(df$family=='Alcedinidae', 'mediumpurple', df$bg)
+df$bg <- ifelse(df$family=='Rhipiduridae', 'indianred', df$bg)
+df$bg <- ifelse(df$family=='Zosteropidae', 'darkseagreen', df$bg)
+df$bg <- ifelse(df$family=='Meliphagidae', 'salmon1', df$bg)
+df$bg <- ifelse(df$family=='Monarchidae', 'steelblue', df$bg)
+df$bg <- ifelse(df$family=='Pachycephalidae', 'darkolivegreen4', df$bg)
+df$bg <- ifelse(df$family=='Trochilidae', 'chocolate', df$bg)
+par(mfrow=c(1,1), mar=c(5,5,4,1), oma=c(0,0,0,0))
+plot(keel.resid ~ tarso.resid, data=df, pch=21, cex=3, bg=df$bg,
+     cex.lab=2, xlab='body size-corrected tarsometatarsus',
+     ylab='body size-corrected flight muscle size')
+abline(m8)
+
+##### Individual figures for talks
+par(mfrow=c(1,1), mar=c(5,5,4,1), oma=c(0,3,0,0))
+## color-code Columbidae by family
+doves$bg <- ifelse(doves$genus=='Ptilinopus', 'darkcyan', 'darkgoldenrod1')
+doves$bg <- ifelse(doves$genus=='Columbina', 'mediumpurple', doves$bg)
+doves$bg <- ifelse(doves$genus=='Zenaida', 'darkseagreen', doves$bg)
+doves$bg <- ifelse(doves$genus=='Chalcophaps', 'indianred', doves$bg)
+doves$bg <- ifelse(doves$genus=='Macropygia', 'steelblue', doves$bg)
+doves$bg <- ifelse(doves$genus=='Gymnophaps', 'salmon1', doves$bg)
+doves$pch <- ifelse(doves$genus=='Ptilinopus', 21, 22)
+doves$pch <- ifelse(doves$genus=='Columbina', 23, doves$pch)
+doves$pch <- ifelse(doves$genus=='Zenaida', 24, doves$pch)
+doves$pch <- ifelse(doves$genus=='Chalcophaps', 25, doves$pch)
+doves$pch <- ifelse(doves$genus=='Macropygia', 1, doves$pch)
+doves$pch <- ifelse(doves$genus=='Gymnophaps', 12, doves$pch)
+# air-ground shape index
+plot(shape ~ log10(spp.rich), data = doves, pch = 21, bg = doves$bg, cex = 3, 
+     main = 'Columbidae', cex.main = 2, font.main = 1, cex.lab=1.8,
+     ylab='larger flight muscles, shorter legs', xlab='log species richness')
 segments(x0 = log10(doves$spp.rich), y0 = doves$shape-doves$sd.shape, y1 = doves$shape+doves$sd.shape)
-#text(x = 1.2, y = 1.4, labels = 'Columbidae', cex = 2)
-plot(shape ~ log10(spp.rich), pch = 21, bg = 'gray', data = todi, cex = 2, 
-     main = 'Todiramphus', cex.main = 2, font.main = 3, ylim = c(0.1, 1.01))
-segments(x0 = log10(todi$spp.rich), y0 = (todi$shape-todi$sd.shape), y1 = (todi$shape+todi$sd.shape))
-#text( x= 2, y = 0.15, labels = 'Todiramphus', cex = 2, font = 3)
-plot(shape ~ log10(spp.rich), data = coereba, pch = 21, bg = 'gray', cex = 2,
-     main = 'Coereba flaveola', cex.main = 2, font.main = 3, ylim = c(-0.7, 0.05))
-segments(x0 = log10(coereba$spp.rich), y0 = coereba$shape-coereba$sd.shape, y1 = coereba$shape+coereba$sd.shape)
-#text( x= 2.05, y = -0.07, labels = 'Coereba flaveola', cex = 2, font = 3)
-plot(shape ~ log10(spp.rich), data = tiaris, pch = 21, bg = 'gray', cex = 2,
-     main = 'Tiaris', cex.main = 2, font.main = 3, ylim = c(-0.23, 0.18))
+mtext(text='air-ground index', cex=2, outer=TRUE, side=2)
+# pc1
+par(mfrow=c(1,1), mar=c(5,5,4,1), oma=c(0,0,0,0))
+plot(pc1 ~ log10(spp.rich), data=doves, pch=21, bg=doves$bg, cex=3, 
+     main='Columbidae', cex.main=2, font.main=1, cex.lab=1.8, 
+     ylab='body size', xlab='log species richness')
+segments(x0 = log10(doves$spp.rich), y0 = doves$pc1-doves$sd.pc1, y1 = doves$pc1+doves$sd.pc1)
+# kingfishers
+king <- subset(df, family == 'Alcedinidae')
+king$bg <- ifelse(king$genus=='Todiramphus', 'darkcyan', 'darkgoldenrod1')
+king$bg <- ifelse(king$genus=='Alcedo', 'mediumpurple', king$bg)
+king$bg <- ifelse(king$genus=='Halcyon', 'darkseagreen', king$bg)
+king$bg <- ifelse(king$genus=='Actenoides', 'indianred', king$bg)
+king$bg <- ifelse(king$genus=='Syma', 'salmon1', king$bg)
+king$pch <- ifelse(king$genus=='Todiramphus', 21, 22)
+king$pch <- ifelse(king$genus=='Alcedo', 23, king$pch)
+king$pch <- ifelse(king$genus=='Halcyon', 24, king$pch)
+king$pch <- ifelse(king$genus=='Actenoides', 25, king$pch)
+king$pch <- ifelse(king$genus=='Syma', 1, king$pch)
+par(mfrow=c(1,1), mar=c(5,5,4,1), oma=c(0,3,0,0))
+plot(shape ~ log10(spp.rich), data = king, pch = 21, bg = king$bg, cex = 3, 
+     main = 'Alcedinidae', cex.main = 2, font.main = 1, cex.lab=1.8,
+     ylab='larger flight muscles, shorter legs', xlab='log species richness')
+segments(x0 = log10(king$spp.rich), y0 = king$shape-king$sd.shape, y1 = king$shape+king$sd.shape)
+mtext(text='air-ground index', cex=2, outer=TRUE, side=2)
+# PC1
+par(mfrow=c(1,1), mar=c(5,5,4,1), oma=c(0,0,0,0))
+plot(pc1 ~ log10(spp.rich), data=king, pch=21, bg=king$bg, cex=3, 
+     main='Alcedinidae', cex.main=2, font.main=1, cex.lab=1.8, 
+     ylab='body size', xlab='log species richness')
+segments(x0 = log10(king$spp.rich), y0 = king$pc1-king$sd.pc1, y1 = king$pc1+king$sd.pc1)
+# tanagers
+thraup <- subset(df, family == 'Thraupidae')
+thraup$bg <- ifelse(thraup$genus=='Coereba', 'darkgoldenrod1', 'indianred')
+thraup$bg <- ifelse(thraup$genus=='Tiaris', 'darkcyan', thraup$bg)
+thraup$pch <- ifelse(thraup$genus=='Coereba', 22, 25)
+thraup$pch <- ifelse(thraup$genus=='Tiaris', 21, thraup$pch)
+par(mfrow=c(1,1), mar=c(5,5,4,1), oma=c(0,3,0,0))
+plot(shape ~ log10(spp.rich), data=thraup, pch=21, bg=thraup$bg,
+     cex=3, cex.main=2, font.main=1, cex.lab=1.8, main='Thraupidae',
+     ylab='larger flight muscles, shorter legs', xlab='log species richness',
+     ylim=c(-0.8, 0.19))
+segments(x0=log10(thraup$spp.rich), y0=thraup$shape-thraup$sd.shape, y1=thraup$shape+thraup$sd.shape)
+mtext(text='air-ground index', cex=2, outer=TRUE, side=2)
+# PC1
+par(mfrow=c(1,1), mar=c(5,5,4,1), oma=c(0,0,0,0))
+plot(pc1 ~ log10(spp.rich), data=thraup, pch=21, bg=thraup$bg, cex=3, 
+     main='Thraupidae', cex.main=2, font.main=1, cex.lab=1.8, 
+     ylab='body size', xlab='log species richness',
+     ylim=c(-1.55, 0.7))
+segments(x0 = log10(thraup$spp.rich), y0 = thraup$pc1-thraup$sd.pc1, y1 = thraup$pc1+thraup$sd.pc1)
+# Coereba
+par(mfrow=c(1,1), mar=c(5,5,4,1), oma=c(0,3,0,0))
+plot(shape ~ log10(spp.rich), data=coereba, pch=21, bg='darkgoldenrod1',
+     cex=3, cex.main=2, font.main=3, cex.lab=1.8, main='Coereba flaveola',
+     ylab='larger flight muscles, shorter legs', xlab='log species richness',
+     ylim = c(-0.7, 0.05))
+segments(x0=log10(coereba$spp.rich), y0=coereba$shape-coereba$sd.shape, y1=coereba$shape+coereba$sd.shape)
+mtext(text='air-ground index', cex=2, outer=TRUE, side=2)
+# PC1
+par(mfrow=c(1,1), mar=c(5,5,4,1), oma=c(0,0,0,0))
+plot(pc1 ~ log10(spp.rich), data=coereba, pch=21, bg='darkgoldenrod1', cex=3, 
+     main='Coereba flaveola', cex.main=2, font.main=3, cex.lab=1.8, 
+     ylab='body size', xlab='log species richness')
+segments(x0 = log10(coereba$spp.rich), y0 = coereba$pc1-coereba$sd.pc1, y1 = coereba$pc1+coereba$sd.pc1)
+# tiaris
+par(mfrow=c(1,1), mar=c(5,5,4,1), oma=c(0,3,0,0))
+plot(shape ~ log10(spp.rich), data = tiaris, pch = 21, bg = 'darkcyan', cex = 3,
+     main = 'Tiaris', cex.main = 2, font.main = 3, ylim = c(-0.23, 0.18), cex.lab=1.8,
+     ylab='larger flight muscles, shorter legs', xlab='log species richness')
 segments(x0 = log10(tiaris$spp.rich), y0 = tiaris$shape-tiaris$sd.shape, y1 = tiaris$shape+tiaris$sd.shape)
-#text(x = 2.1, y = 0.11, labels = 'Tiaris', cex = 2, font = 3)
-plot(shape ~ log10(spp.rich), data = pach, pch = 21, bg = 'gray', cex = 2,
-     main = 'Pachycephala', cex.main = 2, font.main = 3, ylim = c(-1.4, -0.15))
-segments(x0 = log10(pach$spp.rich), y0 = pach$shape-pach$sd.shape, y1 = pach$shape+pach$sd.shape)
-#text(x = 1.85, y = -0.45, labels = 'Pachycephala', cex = 2, font = 3)
-plot(shape ~ log10(spp.rich), data = mon, pch = 21, bg = 'gray', cex = 2,
-     main = 'Monarchidae', cex.main = 2, font.main = 1, ylim = c(-1, 0.21))
+mtext(text='air-ground index', cex=2, outer=TRUE, side=2)
+# loxigilla
+par(mfrow=c(1,1), mar=c(5,5,4,1), oma=c(0,3,0,0))
+plot(shape ~ log10(spp.rich), data=lox, pch=21, bg='indianred', cex=3,
+     main='Loxigilla', cex.main=2, font.main=3, cex.lab=1.8,
+     ylab='larger flight muscles, shorter legs', xlab='log species richness',
+     ylim=c(-0.81, -0.3))
+segments(x0 = log10(lox$spp.rich), y0 = lox$shape-lox$sd.shape, y1 = lox$shape+lox$sd.shape)
+mtext(text='air-ground index', cex=2, outer=TRUE, side=2)
+# Rhipidura
+par(mfrow=c(1,1), mar=c(5,5,4,1), oma=c(0,3,0,0))
+plot(shape ~ log10(spp.rich), data=rhip, pch=21, bg='lightsalmon', cex=3,
+     main='Rhipidura', cex.main=2, font.main=3, cex.lab=1.8,
+     ylab='larger flight muscles, shorter legs', xlab='log species richness',
+     ylim=c(-1.3, 0.38))
+segments(x0 = log10(rhip$spp.rich), y0 = rhip$shape-rhip$sd.shape, y1 = rhip$shape+rhip$sd.shape)
+mtext(text='air-ground index', cex=2, outer=TRUE, side=2)
+# PC1
+par(mfrow=c(1,1), mar=c(5,5,4,1), oma=c(0,0,0,0))
+plot(pc1 ~ log10(spp.rich), data=rhip, pch=21, bg='lightsalmon', cex=3, 
+     main='Rhipidura', cex.main=2, font.main=3, cex.lab=1.8, 
+     ylab='body size', xlab='log species richness',
+     ylim=c(-1.5, 1.3))
+segments(x0 = log10(rhip$spp.rich), y0 = rhip$pc1-rhip$sd.pc1, y1 = rhip$pc1+rhip$sd.pc1)
+# hummingbirds
+hum$bg <- ifelse(hum$genus=='Anthracothorax', 'darkcyan', 'indianred')
+hum$bg <- ifelse(hum$genus=='Chlorostilbon', 'mediumpurple', hum$bg)
+hum$bg <- ifelse(hum$genus=='Eulampis', 'darkgoldenrod1', hum$bg)
+hum$bg <- ifelse(hum$genus=='Chrysolampis', 'darkseagreen', hum$bg)
+hum$bg <- ifelse(hum$genus=='Chlorestes', 'lightsalmon', hum$bg)
+hum$pch <- ifelse(hum$genus=='Anthracothorax', 21, 25)
+hum$pch <- ifelse(hum$genus=='Chlorostilbon', 23, hum$pch)
+hum$pch <- ifelse(hum$genus=='Eulampis', 22, hum$pch)
+hum$pch <- ifelse(hum$genus=='Chrysolampis', 24, hum$pch)
+hum$pch <- ifelse(hum$genus=='Chlorestes', 1, hum$pch)
+par(mfrow=c(1,1), mar=c(5,5,4,1), oma=c(0,3,0,0))
+plot(shape ~ log10(spp.rich), data=hum, pch=21, bg=hum$bg, cex=3,
+     main='Trochilidae', cex.main=2, font.main=1, cex.lab=1.8,
+     ylab='larger flight muscles, shorter legs', xlab='log species richness',
+     ylim=c(1.55, 2.07))
+segments(x0 = log10(hum$spp.rich), y0 = hum$shape-hum$sd.shape, y1 = hum$shape+hum$sd.shape)
+mtext(text='air-ground index', cex=2, outer=TRUE, side=2)
+# PC1
+par(mfrow=c(1,1), mar=c(5,5,4,1), oma=c(0,0,0,0))
+plot(pc1 ~ log10(spp.rich), data=hum, pch=21, bg=hum$bg, cex=3, 
+     main='Trochilidae', cex.main=2, font.main=1, cex.lab=1.8, 
+     ylab='body size', xlab='log species richness',
+     ylim=c(-3.6, -2.65))
+segments(x0 = log10(hum$spp.rich), y0 = hum$pc1-hum$sd.pc1, y1 = hum$pc1+hum$sd.pc1)
+## Meliphagidae
+mel$bg <- ifelse(mel$genus=='Myzomela', 'darkcyan', 'lightsalmon')
+mel$bg <- ifelse(mel$genus=='Meliphaga', 'darkgoldenrod1', mel$bg)
+mel$bg <- ifelse(mel$genus=='Lichmera', 'mediumpurple', mel$bg)
+mel$bg <- ifelse(mel$genus=='Melilestes', 'darkseagreen', mel$bg)
+mel$bg <- ifelse(mel$genus=='Phylidonyris', 'indianred', mel$bg)
+mel$pch <- ifelse(mel$genus=='Myzomela', 21, 1)
+mel$pch <- ifelse(mel$genus=='Meliphaga', 22, mel$pch)
+mel$pch <- ifelse(mel$genus=='Lichmera', 23, mel$pch)
+mel$pch <- ifelse(mel$genus=='Melilestes', 24, mel$pch)
+mel$pch <- ifelse(mel$genus=='Phylidonyris', 25, mel$pch)
+par(mfrow=c(1,1), mar=c(5,5,4,1), oma=c(0,3,0,0))
+plot(shape ~ log10(spp.rich), data=mel, pch=21, bg=mel$bg, cex=3,
+     main='Meliphagidae', cex.main=2, font.main=1, cex.lab=1.8,
+     ylab='larger flight muscles, shorter legs', xlab='log species richness',
+     ylim=c(-1.65, 0.4))
+segments(x0 = log10(mel$spp.rich), y0 = mel$shape-mel$sd.shape, y1 = mel$shape+mel$sd.shape)
+mtext(text='air-ground index', cex=2, outer=TRUE, side=2)
+# PC1
+par(mfrow=c(1,1), mar=c(5,5,4,1), oma=c(0,0,0,0))
+plot(pc1 ~ log10(spp.rich), data=mel, pch=21, bg=mel$bg, cex=3, 
+     main='Meliphagidae', cex.main=2, font.main=1, cex.lab=1.8, 
+     ylab='body size', xlab='log species richness',
+     ylim=c(-1.5, 1.7))
+segments(x0 = log10(mel$spp.rich), y0 = mel$pc1-mel$sd.pc1, y1 = mel$pc1+mel$sd.pc1)
+## Monarchidae
+mon$bg <- ifelse(mon$genus=='Monarcha', 'darkcyan', 'mediumpurple')
+mon$bg <- ifelse(mon$genus=='Myiagra', 'darkgoldenrod1', mon$bg)
+mon$bg <- ifelse(mon$genus=='Clytorhynchus', 'indianred', mon$bg)
+mon$bg <- ifelse(mon$genus=='Arses', 'lightsalmon', mon$bg)
+mon$pch <- ifelse(mon$genus=='Monarcha', 21, 23)
+mon$pch <- ifelse(mon$genus=='Myiagra', 22, mon$pch)
+mon$pch <- ifelse(mon$genus=='Clytorhynchus', 25, mon$pch)
+mon$pch <- ifelse(mon$genus=='Arses', 1, mon$pch)
+par(mfrow=c(1,1), mar=c(5,5,4,1), oma=c(0,3,0,0))
+plot(shape ~ log10(spp.rich), data=mon, pch=21, bg=mon$bg, cex=3,
+     main='Monarchidae', cex.main=2, font.main=1, cex.lab=1.8,
+     ylab='larger flight muscles, shorter legs', xlab='log species richness',
+     ylim=c(-0.95, 0.2))
 segments(x0 = log10(mon$spp.rich), y0 = mon$shape-mon$sd.shape, y1 = mon$shape+mon$sd.shape)
-#text(x = 1.75, y = 0.12, labels = 'Monarchidae', cex = 2)
-mtext('log species richness', cex = 2, side = 1, outer = TRUE, padj = 1)
-mtext('air-ground index', cex = 2, side = 2, line = 3, outer = TRUE, padj = 0)
+mtext(text='air-ground index', cex=2, outer=TRUE, side=2)
+# PC1
+par(mfrow=c(1,1), mar=c(5,5,4,1), oma=c(0,0,0,0))
+plot(pc1 ~ log10(spp.rich), data=mon, pch=21, bg=mon$bg, cex=3, 
+     main='Monarchidae', cex.main=2, font.main=1, cex.lab=1.8, 
+     ylab='body size', xlab='log species richness',
+     ylim=c(-1.2, 1))
+segments(x0 = log10(mon$spp.rich), y0 = mon$pc1-mon$sd.pc1, y1 = mon$pc1+mon$sd.pc1)
+## Pachycephalidae
+par(mfrow=c(1,1), mar=c(5,5,4,1), oma=c(0,3,0,0))
+plot(shape ~ log10(spp.rich), data=pach, pch=21, bg='darkgoldenrod1', cex=3,
+     main='Pachycephala', cex.main=2, font.main=3, cex.lab=1.8,
+     ylab='larger flight muscles, shorter legs', xlab='log species richness',
+     ylim=c(-1.4, -0.2))
+segments(x0 = log10(pach$spp.rich), y0 = pach$shape-pach$sd.shape, y1 = pach$shape+pach$sd.shape)
+mtext(text='air-ground index', cex=2, outer=TRUE, side=2)
+# PC1
+par(mfrow=c(1,1), mar=c(5,5,4,1), oma=c(0,0,0,0))
+plot(pc1 ~ log10(spp.rich), data=pach, pch=21, bg='darkgoldenrod1', cex=3, 
+     main='Pachycephala', cex.main=2, font.main=3, cex.lab=1.8, 
+     ylab='body size', xlab='log species richness',
+     ylim=c(-0.2, 1.7))
+segments(x0 = log10(pach$spp.rich), y0 = pach$pc1-pach$sd.pc1, y1 = pach$pc1+pach$sd.pc1)
+## Zosteropidae
+par(mfrow=c(1,1), mar=c(5,5,4,1), oma=c(0,3,0,0))
+zost$bg <- ifelse(zost$genus=='Zosterops', 'darkcyan', 'darkgoldenrod1')
+zost$pch <- ifelse(zost$genus=='Zosterops', 21, 22)
+plot(shape ~ log10(spp.rich), data=zost, pch=21, bg=zost$bg, cex=3,
+     main='Zosteropidae', cex.main=2, font.main=1, cex.lab=1.8,
+     ylab='larger flight muscles, shorter legs', xlab='log species richness',
+     ylim=c(-1.2,0.05))
+segments(x0 = log10(zost$spp.rich), y0 = zost$shape-zost$sd.shape, y1 = zost$shape+zost$sd.shape)
+mtext(text='air-ground index', cex=2, outer=TRUE, side=2)
+# PC1
+par(mfrow=c(1,1), mar=c(5,5,4,1), oma=c(0,0,0,0))
+plot(pc1 ~ log10(spp.rich), data=zost, pch=21, bg=zost$bg, cex=3, 
+     main='Zosteropidae', cex.main=2, font.main=1, cex.lab=1.8, 
+     ylab='body size', xlab='log species richness',
+     ylim=c(-1.5, 0.5))
+segments(x0 = log10(zost$spp.rich), y0 = zost$pc1-zost$sd.pc1, y1 = zost$pc1+zost$sd.pc1)
+
+#### combined figure for manuscript
+## all nine families, points color-coded by genus
+# regression lines and confidence bands for each family and major genera
+par(mfcol = c(3, 3))
+par(mar = c(2,2.5,2.5,0), oma = c(4.5, 6.5, 0.5, 0.3))
+# doves
+doves.sorted <- doves[order(doves$spp.rich),]
+doves.lm <- lm(shape ~ log10(spp.rich), data=doves.sorted)
+doves.pred <- predict(doves.lm, int='confidence')
+plot(shape ~ log10(spp.rich), data = doves.sorted, pch = doves.sorted$pch, bg = doves.sorted$bg, 
+     cex = 2, main = 'Columbidae', cex.main = 2, font.main = 1)
+ptil.lm <- lm(shape ~ log10(spp.rich), data=ptil)
+#abline(ptil.lm, lty=1, col='darkcyan', lwd=2)
+duc.sort <- subset(doves.sorted, genus=='Ducula')
+duc.lm <- lm(shape ~ log10(spp.rich), data=duc)
+#abline(duc.lm, lty=1, col='darkgoldenrod1', lwd=2)
+matlines(log10(doves.sorted$spp.rich), doves.pred, lty=c(1,3,3), col='black', lwd=2)
+# kingfishers
+king.sorted <- king[order(king$spp.rich),]
+king.lm <- lm(shape ~ log10(spp.rich), data=king.sorted)
+king.pred <- predict(king.lm, int='confidence')
+plot(shape ~ log10(spp.rich), data = king.sorted, bg = king.sorted$bg, cex = 2, 
+     pch= king.sorted$pch, main = 'Alcedinidae', cex.main = 2, font.main = 1)
+todi.lm <- lm(shape ~ log10(spp.rich), data=todi)
+#abline(todi.lm, lty=1, col='darkcyan', lwd=2)
+matlines(log10(king.sorted$spp.rich), king.pred, lty=c(1,3,3), col='black', lwd=2)
+# hummingbirds
+hum.sort <- hum[order(hum$spp.rich),]
+hum.lm <- lm(shape ~ log10(spp.rich), data=hum.sort)
+hum.pred <- predict(hum.lm, int='confidence')
+plot(shape ~ log10(spp.rich), data=hum.sort, pch=hum.sort$pch, bg=hum.sort$bg, cex=2,
+     main='Trochilidae', cex.main=2, font.main=1)
+matlines(log10(hum.sort$spp.rich), hum.pred, lty=c(1,3,3), col='black', lwd=2)
+# tanagers
+thraup.sort <- thraup[order(thraup$spp.rich),]
+thraup.lm <- lm(shape ~ log10(spp.rich), data=thraup.sort)
+thraup.pred <- predict(thraup.lm, int='confidence')
+plot(shape ~ log10(spp.rich), data = thraup.sort, pch=thraup.sort$pch, bg = thraup.sort$bg, cex = 2,
+     main = 'Thraupidae', cex.main = 2, font.main = 1)
+coereba.lm <- lm(shape ~ log10(spp.rich), data=coereba)
+#abline(coereba.lm, lty=1, col='darkgoldenrod1', lwd=2)
+tiaris.lm <- lm(shape ~ log10(spp.rich), data=tiaris)
+#abline(tiaris.lm, lty=1, col='darkcyan', lwd=2)
+lox.lm <- lm(shape ~ log10(spp.rich), data=lox)
+#abline(lox.lm, lty=1, col='indianred', lwd=2)
+matlines(log10(thraup.sort$spp.rich), thraup.pred, lty=c(1,3,3), col='black', lwd=2)
+# Rhipidura
+rhip.sort <- rhip[order(rhip$spp.rich),]
+rhip.lm <- lm(shape ~ log10(spp.rich), data=rhip.sort)
+rhip.pred <- predict(rhip.lm, int='confidence')
+plot(shape ~ log10(spp.rich), data=rhip.sort, pch=21, bg='lightsalmon', cex=2,
+     main='Rhipidura', cex.main=2, font.main=3)
+matlines(log10(rhip.sort$spp.rich), rhip.pred, lty=c(1,3,3), col='black', lwd=2)
+# Pachycephala
+pach.sort <- pach[order(pach$spp.rich),]
+pach.lm <- lm(shape ~ log10(spp.rich), data=pach.sort)
+pach.pred <- predict(pach.lm, int='confidence')
+plot(shape ~ log10(spp.rich), data = pach.sort, pch = 21, bg = 'darkgoldenrod1', cex = 2,
+     main = 'Pachycephala', cex.main = 2, font.main = 3)
+matlines(log10(pach.sort$spp.rich), pach.pred, lty=c(1,3,3), col='black', lwd=2)
+# Monarchidae
+mon.sort <- mon[order(mon$spp.rich),]
+mon.lm <- lm(shape ~ log10(spp.rich), data=mon.sort)
+mon.pred <- predict(mon.lm, int='confidence')
+plot(shape ~ log10(spp.rich), data = mon.sort, pch=mon.sort$pch, bg = mon.sort$bg, cex = 2,
+     main = 'Monarchidae', cex.main = 2, font.main = 1)
+monarcha.lm <- lm(shape ~ log10(spp.rich), data=subset(mon, genus=='Monarcha'))
+#abline(monarcha.lm, lty=1, col='darkcyan', lwd=2)
+myiagra.lm <- lm(shape ~ log10(spp.rich), data=subset(mon, genus=='Myiagra'))
+#abline(myiagra.lm, lty=1, col='darkgoldenrod1', lwd=2)
+matlines(log10(mon.sort$spp.rich), mon.pred, lty=c(1,3,3), col='black', lwd=2)
+# Meliphagidae
+mel.sort <- mel[order(mel$spp.rich),]
+mel.lm <- lm(shape ~ log10(spp.rich), data=mel.sort)
+mel.pred <- predict(mel.lm, int='confidence')
+plot(shape ~ log10(spp.rich), data=mel.sort, pch=mel.sort$pch, bg=mel.sort$bg, cex=2,
+     main='Meliphagidae', cex.main=2, font.main=1)
+myzomela.lm <- lm(shape ~ log10(spp.rich), data=subset(mel, genus=='Myzomela'))
+#abline(myzomela.lm, lty=1, col='darkcyan', lwd=2)
+matlines(log10(mel.sort$spp.rich), mel.pred, lty=c(1,3,3), col='black', lwd=2)
+# Zosteropidae
+zost.sort <- zost[order(zost$spp.rich),]
+zost.lm <- lm(shape ~ log10(spp.rich), data=zost.sort)
+zost.pred <- predict(zost.lm, int='confidence')
+plot(shape ~ log10(spp.rich), data=zost.sort, pch=zost.sort$pch, bg=zost.sort$bg, cex=2,
+     main='Zosteropidae', cex.main=2, font.main=1)
+matlines(log10(zost.sort$spp.rich), zost.pred, lty=c(1,3,3), col='black', lwd=2)
+mtext('log island species richness', cex = 2, side = 1, outer = TRUE, padj = 1)
+mtext('flight-leg index', cex = 2, side = 2, line = 3, outer = TRUE, padj = 0)
 mtext('(larger flight muscles, shorter legs)', cex = 1.5, side = 2, line = 0.3, outer = TRUE, padj = 0)
+
+### above figure, but with standard axes
+par(mfcol = c(3, 3))
+par(mar = c(0,0,2,0), oma = c(6.5, 10, 0.5, 0.3))
+plot(shape ~ log10(spp.rich), data = doves.sorted, pch=doves.sorted$pch, bg = doves.sorted$bg, 
+     cex = 2, main = 'Columbidae', cex.main = 2, font.main = 1, ylim=c(-1.7,2), xlim=c(0.45,2.8),
+     xaxt='n', cex.axis=2)
+matlines(log10(doves.sorted$spp.rich), doves.pred, lty=c(1,3,3), col='black', lwd=2)
+plot(shape ~ log10(spp.rich), pch=king.sorted$pch, data = king.sorted, bg = king.sorted$bg, cex = 2, 
+     main = 'Alcedinidae', cex.main = 2, font.main = 1, ylim=c(-1.7,2), xlim=c(0.45,2.8),
+     xaxt='n', cex.axis=2)
+matlines(log10(king.sorted$spp.rich), king.pred, lty=c(1,3,3), col='black', lwd=2)
+plot(shape ~ log10(spp.rich), data=hum.sort, pch=hum.sort$pch, bg=hum.sort$bg, cex=2,
+     main='Trochilidae', cex.main=2, font.main=1, ylim=c(-1.7,2), xlim=c(0.45,2.8), cex.axis=2)
+matlines(log10(hum.sort$spp.rich), hum.pred, lty=c(1,3,3), col='black', lwd=2)
+plot(shape ~ log10(spp.rich), data = thraup.sort, pch=thraup.sort$pch, bg = thraup.sort$bg, cex = 2,
+     main = 'Thraupidae', cex.main = 2, font.main = 1, ylim=c(-1.7,2), xlim=c(0.45,2.8),
+     xaxt='n', yaxt='n')
+matlines(log10(thraup.sort$spp.rich), thraup.pred, lty=c(1,3,3), col='black', lwd=2)
+plot(shape ~ log10(spp.rich), data=rhip.sort, pch=21, bg='lightsalmon', cex=2,
+     main='Rhipidura', cex.main=2, font.main=3, ylim=c(-1.7,2), xlim=c(0.45,2.8),
+     xaxt='n', yaxt='n')
+matlines(log10(rhip.sort$spp.rich), rhip.pred, lty=c(1,3,3), col='black', lwd=2)
+plot(shape ~ log10(spp.rich), data = pach.sort, pch = 21, bg = 'darkgoldenrod1', cex = 2,
+     main = 'Pachycephala', cex.main = 2, font.main = 3, ylim=c(-1.7,2), xlim=c(0.45,2.8),
+     yaxt='n', cex.axis=2)
+matlines(log10(pach.sort$spp.rich), pach.pred, lty=c(1,3,3), col='black', lwd=2)
+plot(shape ~ log10(spp.rich), data = mon.sort, pch=mon.sort$pch, bg = mon.sort$bg, cex = 2,
+     main = 'Monarchidae', cex.main = 2, font.main = 1, ylim=c(-1.7,2), xlim=c(0.45,2.8),
+     yaxt='n', xaxt='n')
+matlines(log10(mon.sort$spp.rich), mon.pred, lty=c(1,3,3), col='black', lwd=2)
+plot(shape ~ log10(spp.rich), data=mel.sort, pch=mel.sort$pch, bg=mel.sort$bg, cex=2,
+     main='Meliphagidae', cex.main=2, font.main=1, ylim=c(-1.7,2), xlim=c(0.45,2.8), 
+     xaxt='n', yaxt='n')
+matlines(log10(mel.sort$spp.rich), mel.pred, lty=c(1,3,3), col='black', lwd=2)
+plot(shape ~ log10(spp.rich), data=zost.sort, pch=zost.sort$pch, bg=zost.sort$bg, cex=2,
+     main='Zosteropidae', cex.main=2, font.main=1, ylim=c(-1.7,2), xlim=c(0.45,2.8),
+     yaxt='n', cex.axis=2)
+matlines(log10(zost.sort$spp.rich), zost.pred, lty=c(1,3,3), col='black', lwd=2)
+mtext('log island species richness', cex = 2, side = 1, line = 2,outer = TRUE, padj = 1)
+mtext('flight-leg index', cex = 2, side = 2, line = 6, outer = TRUE, padj = 0)
+mtext('(larger flight muscles, shorter legs)', cex = 1.5, side = 2, line = 3, outer = TRUE, padj = 0)
+
+
 
 ####
 par(mar = c(0,0,0,0), oma = c(0,0,0,0))
