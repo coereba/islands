@@ -1,3 +1,9 @@
+### This file analyzes data and creates figures in Wright et al 
+### Analysis 1
+## Results presented in text of main paper and text of supplement
+# PGLS of flight muscle size and island endemism
+# Relationship between flight muscle size and keel length
+
 setwd("~/Dropbox/Island-bird-morphology/islands")
 require(plyr)
 require(ape)
@@ -166,6 +172,10 @@ landbird1 <- gls(flight.body ~ small.island.restricted, data = landbird.df, corr
 summary(landbird1)
 landbird.null <- gls(flight.body ~ 1, data = landbird.df, correlation = landbird.pa)
 summary(landbird.null)
+1 - (landbird1$sigma/landbird.null$sigma)^2
+boxplot(flight.body ~ small.island.restricted, data = landbird.df, cex.axis = 2, col = 'gray',
+        ylab = 'relative flight muscle size', cex.lab = 2,
+        names = c('continental', 'restricted to islands'))
 
 #look at just the columbids
 columb <- subset(df, order == 'columbiformes')

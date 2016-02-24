@@ -1,4 +1,8 @@
+### This file analyzes data and creates figures in Wright et al "A new island rule for birds: evolution toward flightlessness"
+## Analysis 3B
 # Testing the island rule
+## Results presented in text of main paper and text of supplement
+## Results presented in Figures S11-S14 of supplement
 
 setwd("~/Dropbox/Island-bird-morphology/islands")
 data <- read.csv('skeletal_data.csv', header = T)
